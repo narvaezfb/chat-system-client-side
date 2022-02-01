@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import Layout from "./components/layout";
+import ListChats from "./components/listChats";
+import ChatContainer from "./components/chatContainer";
+import Box from "@mui/material/Box";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Layout>
+      {" "}
+      <Box
+        sx={{
+          display: "flex",
+        }}
+      >
+        <Box
+          sx={{
+            width: 300,
+            border: 1,
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <ListChats />
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+          }}
+        >
+          <ChatContainer />
+        </Box>
+      </Box>
+    </Layout>
   );
 }
 
