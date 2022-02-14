@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 const Login = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  const [message, setMessage] = useState("hello");
+  const [message, setMessage] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const history = useHistory();
 
@@ -25,6 +25,10 @@ const Login = () => {
   Axios.defaults.withCredentials = true;
 
   const login = async () => {
+    if (userEmail === "" || userPassword === "") {
+      return setMessage("please provide email or password");
+    }
+
     await Axios.post("/login", {
       email: userEmail,
       password: userPassword,
@@ -86,7 +90,16 @@ const Login = () => {
         >
           Submit
         </Button>
-        {message}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 2,
+          }}
+        >
+          <Typography color="#FF0000"> {message}</Typography>
+        </Box>
       </Box>
     </Box>
   );
