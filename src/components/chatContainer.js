@@ -3,36 +3,55 @@ import Box from "@mui/material/Box";
 import ChatContainerHeader from "./chatHeader";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
+import Axios from "axios";
 
-const ChatContainer = ({ socket, userName, messageTo }) => {
+const ChatContainer = ({
+	socket,
+	userName,
+	userId,
+	chatRoom,
+	messageHistory,
+}) => {
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [messageList, setMessageList] = useState([]);
 
 	useEffect(() => {
-		socket.on("recieve-message", (data) => {
-			console.log(data);
-			setMessageList((list) => [...list, data]);
+		socket.on("recieve-message", (retrieveCurrentChatHistory) => {
+			setMessageList(retrieveCurrentChatHistory);
 		});
 	}, [socket]);
 
 	const sendMessage = async () => {
 		if (currentMessage !== "") {
 			const messageData = {
-				messageTo: messageTo,
+				From: userId,
+				chatRoom: chatRoom,
 				message: currentMessage,
 			};
 
 			await socket.emit("send-message", messageData);
-			setMessageList((list) => [...list, messageData]);
+
+			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`).then(
+				(response) => {
+					setMessageList(response.data.data.messages);
+				}
+			);
 			setCurrentMessage("");
 		}
 	};
 	return (
 		<Box sx={{}}>
-			<ChatContainerHeader userName={userName} userId={messageTo} />
+			<ChatContainerHeader userName={userName} />
 			<Box sx={{ height: 550 }}>
 				<div>
-					{messageList?.map((message, index) => {
+					{/* {messageList.length !== 0
+						? messageList?.map((message, index) => {
+								return <p key={index}>{message.message}</p>;
+						  })
+						: messageHistory?.map((message, index) => {
+								return <p key={index}>{message.message}</p>;
+						  })} */}
+					{messageHistory?.map((message, index) => {
 						return <p key={index}>{message.message}</p>;
 					})}
 				</div>

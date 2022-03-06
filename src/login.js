@@ -6,103 +6,101 @@ import { Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
 
 const Login = () => {
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const history = useHistory();
+	const [userEmail, setUserEmail] = useState("");
+	const [userPassword, setUserPassword] = useState("");
+	const [message, setMessage] = useState("");
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const history = useHistory();
+	Axios.defaults.withCredentials = true;
 
-  useEffect(() => {
-    Axios.get("http://localhost:3001/login").then((response) => {
-      if (response.data.loggedIn) {
-        console.log("user is logged in");
-        setIsAuthenticated(true);
-        return history.push("/chat");
-      }
-    });
-  }, [message]);
+	useEffect(() => {
+		Axios.get("http://localhost:3001/login").then((response) => {
+			if (response.data.loggedIn) {
+				console.log("user is logged in");
+				setIsAuthenticated(true);
+				return history.push("/chat");
+			}
+		});
+	}, [message]);
 
-  Axios.defaults.withCredentials = true;
+	const login = async () => {
+		if (userEmail === "" || userPassword === "") {
+			return setMessage("please provide email or password");
+		}
 
-  const login = async () => {
-    if (userEmail === "" || userPassword === "") {
-      return setMessage("please provide email or password");
-    }
+		await Axios.post("/login", {
+			email: userEmail,
+			password: userPassword,
+		}).then((response) => {
+			if (response.data.status === "success") {
+				setIsAuthenticated(true);
+				return history.push("/chat");
+			} else {
+				setMessage("Invalid credentials");
+			}
+		});
+	};
 
-    await Axios.post("/login", {
-      email: userEmail,
-      password: userPassword,
-    }).then((response) => {
-      if (response.data.status === "success") {
-        setIsAuthenticated(true);
-        return history.push("/chat");
-      } else {
-        setMessage("Invalid credentials");
-      }
-    });
-    // return history.push("/chat");
-  };
-
-  return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          marginTop: 20,
-          width: "25%",
-          padding: 6,
-          border: 1,
-        }}
-      >
-        <Typography variant="h4" align="center">
-          {" "}
-          Sign In{" "}
-        </Typography>
-        <TextField
-          required
-          id="outlined-required"
-          label="email"
-          sx={{ marginTop: 1 }}
-          onChange={(event) => setUserEmail(event.target.value)}
-        />
-        <TextField
-          required
-          id="outlined-required"
-          label="password"
-          sx={{ marginTop: 1 }}
-          onChange={(event) => setUserPassword(event.target.value)}
-        />
-        <Button
-          variant="contained"
-          color="success"
-          sx={{ marginTop: 1 }}
-          onClick={login}
-        >
-          Submit
-        </Button>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 2,
-          }}
-        >
-          <Typography color="#FF0000"> {message}</Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
+	return (
+		<Box
+			sx={{
+				width: "100%",
+				height: "100%",
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					marginTop: 20,
+					width: "25%",
+					padding: 6,
+					border: 1,
+				}}
+			>
+				<Typography variant="h4" align="center">
+					{" "}
+					Sign In{" "}
+				</Typography>
+				<TextField
+					required
+					id="outlined-required"
+					label="email"
+					sx={{ marginTop: 1 }}
+					onChange={(event) => setUserEmail(event.target.value)}
+				/>
+				<TextField
+					required
+					id="outlined-required"
+					label="password"
+					sx={{ marginTop: 1 }}
+					onChange={(event) => setUserPassword(event.target.value)}
+				/>
+				<Button
+					variant="contained"
+					color="success"
+					sx={{ marginTop: 1 }}
+					onClick={login}
+				>
+					Submit
+				</Button>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						marginTop: 2,
+					}}
+				>
+					<Typography color="#FF0000"> {message}</Typography>
+				</Box>
+			</Box>
+		</Box>
+	);
 };
 
 export default Login;
