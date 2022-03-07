@@ -44,16 +44,16 @@ const ChatContainer = ({
 			<ChatContainerHeader userName={userName} />
 			<Box sx={{ height: 550 }}>
 				<div>
-					{/* {messageList.length !== 0
+					{messageList.length !== 0
 						? messageList?.map((message, index) => {
 								return <p key={index}>{message.message}</p>;
 						  })
 						: messageHistory?.map((message, index) => {
 								return <p key={index}>{message.message}</p>;
-						  })} */}
-					{messageHistory?.map((message, index) => {
+						  })}
+					{/* {messageHistory?.map((message, index) => {
 						return <p key={index}>{message.message}</p>;
-					})}
+					})} */}
 				</div>
 			</Box>
 			<Box
