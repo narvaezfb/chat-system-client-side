@@ -9,7 +9,7 @@ import io from "socket.io-client";
 import ChatContainerHeader from "./components/chatHeader";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
-import { height } from "@mui/system";
+import Message from "./components/message";
 
 const socket = io.connect("http://localhost:3001");
 
@@ -88,7 +88,6 @@ function Chat() {
 
 	return (
 		<Layout>
-			{" "}
 			<Box
 				sx={{
 					display: "flex",
@@ -100,6 +99,8 @@ function Chat() {
 					sx={{
 						width: 300,
 						border: 1,
+						display: "flex",
+						flexDirection: "column",
 					}}
 				>
 					<ListChats chats={chats} openChat={getCurrentChat} userId={userId} />
@@ -112,9 +113,17 @@ function Chat() {
 				>
 					<ChatContainerHeader userName={currentUserChat} />
 					<Box sx={{ height: 550 }}>
-						<Box sx={{ border: 1, p: 5, m: 1, height: 470 }}>
+						<Box sx={{ border: 1, m: 1, height: 545 }}>
 							{chatHistory?.map((message, index) => {
-								return <p key={index}>{message.message}</p>;
+								return (
+									<Message
+										message={message.message}
+										time={message.createdAt}
+										userID={userId}
+										fromUser={message.fromUser}
+										key={index}
+									/>
+								);
 							})}
 						</Box>
 					</Box>

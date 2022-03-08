@@ -25,7 +25,7 @@ const Login = () => {
 
 	const login = async () => {
 		if (userEmail === "" || userPassword === "") {
-			return setMessage("please provide email or password");
+			return setMessage("please provide email and password");
 		}
 
 		await Axios.post("/login", {
@@ -77,6 +77,7 @@ const Login = () => {
 					required
 					id="outlined-required"
 					label="password"
+					type={"password"}
 					sx={{ marginTop: 1 }}
 					onChange={(event) => setUserPassword(event.target.value)}
 				/>
