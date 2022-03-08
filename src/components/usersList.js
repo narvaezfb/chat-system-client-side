@@ -27,18 +27,13 @@ function getStyles(contact, personName, theme) {
 	};
 }
 
-export default function ContactSelection() {
+export default function ContactSelection({ contacts }) {
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState("");
-	const [contacts, setContacts] = React.useState([]);
 	const [contactId, setContactId] = React.useState("");
 	Axios.defaults.withCredentials = true;
 
 	React.useEffect(() => {
-		Axios.get(`http://localhost:3001/users`).then((response) => {
-			console.log(response.data.data.users);
-			setContacts(response.data.data.users);
-		});
 		console.log("contact id:", contactId);
 	}, [personName, contactId]);
 
