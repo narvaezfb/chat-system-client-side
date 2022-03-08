@@ -5,7 +5,6 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import Axios from "axios";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,20 +26,12 @@ function getStyles(contact, personName, theme) {
 	};
 }
 
-export default function ContactSelection({ contacts }) {
+export default function ContactSelection({
+	contacts,
+	personName,
+	handleChange,
+}) {
 	const theme = useTheme();
-	const [personName, setPersonName] = React.useState("");
-	const [contactId, setContactId] = React.useState("");
-	Axios.defaults.withCredentials = true;
-
-	React.useEffect(() => {
-		console.log("contact id:", contactId);
-	}, [personName, contactId]);
-
-	const handleChange = (event) => {
-		setPersonName(event.target.value);
-		setContactId(event.target.value);
-	};
 
 	return (
 		<div>

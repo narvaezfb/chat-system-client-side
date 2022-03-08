@@ -1,27 +1,51 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import NativeSelect from "@mui/material/NativeSelect";
 import UsersList from "./usersList";
 import Typography from "@mui/material/Typography";
 import Axios from "axios";
+import { useHistory } from "react-router-dom";
 
-export default function CreateChat({ open, handleClose }) {
+export default function CreateChat({ open, handleClose, userID1 }) {
 	const [contacts, setContacts] = React.useState([]);
+	const [personName, setPersonName] = React.useState("");
+	const [contactId, setContactId] = React.useState("");
+	const history = useHistory();
+	Axios.defaults.withCredentials = true;
 
 	React.useEffect(() => {
+		getListOfUsers();
+		console.log("contact id", contactId);
+	}, [personName, contactId]);
+
+	const getListOfUsers = () => {
 		Axios.get(`http://localhost:3001/users`).then((response) => {
-			console.log(response.data.data.users);
 			setContacts(response.data.data.users);
 		});
-	}, []);
+	};
+
+	const handleChange = (event) => {
+		setPersonName(event.target.value);
+		setContactId(event.target.value);
+	};
+
+	const CreateNewChat = () => {
+		const userID2 = contactId;
+		if (userID1 !== "" && userID2 !== "") {
+			const data = {
+				userID1: userID1,
+				userID2: userID2,
+			};
+			Axios.post("http://localhost:3001/chatRooms", data).then((response) => {
+				handleClose();
+				return history.push("/chat");
+			});
+		}
+	};
+
 	return (
 		<div>
 			<Dialog open={open} onClose={handleClose} sx={{}}>
@@ -30,11 +54,16 @@ export default function CreateChat({ open, handleClose }) {
 					<Typography gutterBottom>
 						Please select a new contact you want to chat with:
 					</Typography>
-					<UsersList />
+					<UsersList
+						contacts={contacts}
+						personName={personName}
+						contactId={contactId}
+						handleChange={handleChange}
+					/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleClose}>Add</Button>
+					<Button onClick={CreateNewChat}>Add</Button>
 				</DialogActions>
 			</Dialog>
 		</div>

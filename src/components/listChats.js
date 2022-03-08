@@ -7,14 +7,15 @@ import { Button, List } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import CreateChat from "./createChat";
 
 export default function AllItems({ openChat, chats, userId, updateChat }) {
 	const [open, setOpen] = React.useState(false);
+
+	React.useEffect(() => {
+		console.log("user ID", userId);
+		console.log("user chats", chats);
+	}, [userId, chats]);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -23,7 +24,6 @@ export default function AllItems({ openChat, chats, userId, updateChat }) {
 	const handleClose = () => {
 		setOpen(false);
 	};
-	const [age, setAge] = React.useState("");
 
 	return (
 		<List>
@@ -35,7 +35,7 @@ export default function AllItems({ openChat, chats, userId, updateChat }) {
 				<Button sx={{ border: 1, color: "#212121" }} onClick={handleClickOpen}>
 					<AddIcon />
 				</Button>
-				<CreateChat open={open} handleClose={handleClose} />
+				<CreateChat open={open} handleClose={handleClose} userID1={userId} />
 			</ListItem>
 			<Divider />
 			<List>
