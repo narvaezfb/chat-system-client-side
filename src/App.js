@@ -7,7 +7,10 @@ function App() {
 	return (
 		<Router>
 			<Switch>
-				<Route path="/login">
+				{/* <Route path="/">
+					<Login />
+				</Route> */}
+				<Route exact path="/">
 					<Login />
 				</Route>
 				<Route path="/chat">

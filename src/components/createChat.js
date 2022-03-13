@@ -18,11 +18,14 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 
 	React.useEffect(() => {
 		getListOfUsers();
-		console.log("contact id", contactId);
 	}, [personName, contactId]);
 
 	const getListOfUsers = () => {
-		Axios.get(`http://localhost:3001/users`).then((response) => {
+		Axios.get(`http://localhost:3001/users`, {
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		}).then((response) => {
 			setContacts(response.data.data.users);
 		});
 	};
@@ -39,7 +42,9 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 				userID1: userID1,
 				userID2: userID2,
 			};
-			Axios.post("http://localhost:3001/chatRooms", data).then((response) => {
+			Axios.post("http://localhost:3001/chatRooms", data, {
+				headers: { Authorization: localStorage.getItem("token") },
+			}).then((response) => {
 				handleClose();
 				return history.push("/chat");
 			});

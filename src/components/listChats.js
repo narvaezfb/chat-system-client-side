@@ -12,10 +12,7 @@ import CreateChat from "./createChat";
 export default function AllItems({ openChat, chats, userId, updateChat }) {
 	const [open, setOpen] = React.useState(false);
 
-	React.useEffect(() => {
-		console.log("user ID", userId);
-		console.log("user chats", chats);
-	}, [userId, chats]);
+	React.useEffect(() => {}, [userId, chats]);
 
 	const handleClickOpen = () => {
 		setOpen(true);

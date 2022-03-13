@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import Layout from "./components/layout";
 import ListChats from "./components/listChats";
-import ChatContainer from "./components/chatContainer";
+import ChatContainerHeader from "./components/chatHeader";
 import Box from "@mui/material/Box";
 import { useHistory } from "react-router-dom";
 import io from "socket.io-client";
-import ChatContainerHeader from "./components/chatHeader";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import Message from "./components/message";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 const socket = io.connect("http://localhost:3001");
 
@@ -30,18 +30,32 @@ function Chat() {
 	}, [userId, chatRoom, chatHistory, socket, chats]);
 
 	const isAuthenticated = () => {
-		Axios.get("http://localhost:3001/login").then((response) => {
-			if (!response.data.loggedIn) {
-				return history.push("/");
-			}
-			setUserId(response.data.user._id);
+		try {
+			Axios.get("http://localhost:3001/login", {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			})
+				.then((response) => {
+					if (!response.data.loggedIn) {
+						return history.push("/");
+					}
+					setUserId(response.data.user._id);
 
-			Axios.get(`http://localhost:3001/userchats/${userId}`).then(
-				(response) => {
-					setChats(response.data.data.chatRooms);
-				}
-			);
-		});
+					Axios.get(`http://localhost:3001/userchats/${userId}`, {
+						headers: {
+							Authorization: localStorage.getItem("token"),
+						},
+					}).then((response) => {
+						setChats(response.data.data.chatRooms);
+					});
+				})
+				.catch(() => {
+					return history.push("/");
+				});
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	const getCurrentChat = (event) => {
@@ -53,12 +67,13 @@ function Chat() {
 	};
 
 	const getChatHistory = (chatRoomID) => {
-		Axios.get(`http://localhost:3001/chatRoom/${chatRoomID}/messages`).then(
-			(response) => {
-				console.log(response);
-				setChatHistory(response.data.data.messages);
-			}
-		);
+		Axios.get(`http://localhost:3001/chatRoom/${chatRoomID}/messages`, {
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		}).then((response) => {
+			setChatHistory(response.data.data.messages);
+		});
 	};
 
 	const recieveMessage = () => {
@@ -77,9 +92,11 @@ function Chat() {
 
 			await socket.emit("send-message", messageData);
 
-			await Axios.get(
-				`http://localhost:3001/chatRoom/${chatRoom}/messages`
-			).then((response) => {
+			await Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}).then((response) => {
 				setChatHistory(response.data.data.messages);
 			});
 			setCurrentMessage("");
@@ -113,18 +130,20 @@ function Chat() {
 				>
 					<ChatContainerHeader userName={currentUserChat} />
 					<Box sx={{ height: 550 }}>
-						<Box sx={{ border: 1, m: 1, height: 545 }}>
-							{chatHistory?.map((message, index) => {
-								return (
-									<Message
-										message={message.message}
-										time={message.createdAt}
-										userID={userId}
-										fromUser={message.fromUser}
-										key={index}
-									/>
-								);
-							})}
+						<Box sx={{ border: 1, m: 1, height: 545, pt: 1 }}>
+							<Scrollbars style={{ height: 500 }}>
+								{chatHistory?.map((message, index) => {
+									return (
+										<Message
+											message={message.message}
+											time={message.createdAt}
+											userID={userId}
+											fromUser={message.fromUser}
+											key={index}
+										/>
+									);
+								})}
+							</Scrollbars>
 						</Box>
 					</Box>
 					<Box

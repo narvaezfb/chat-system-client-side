@@ -14,13 +14,18 @@ const Login = () => {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		Axios.get("http://localhost:3001/login").then((response) => {
-			if (response.data.loggedIn) {
-				console.log("user is logged in");
-				setIsAuthenticated(true);
-				return history.push("/chat");
-			}
-		});
+		Axios.get("http://localhost:3001/login", {
+			headers: { Authorization: localStorage.getItem("token") },
+		})
+			.then((response) => {
+				if (response.data.loggedIn) {
+					setIsAuthenticated(true);
+					return history.push("/chat");
+				}
+			})
+			.catch(() => {
+				return history.push("/");
+			});
 	}, [message]);
 
 	const login = async () => {
@@ -32,8 +37,9 @@ const Login = () => {
 			email: userEmail,
 			password: userPassword,
 		}).then((response) => {
-			if (response.data.status === "success") {
+			if (response.data.auth) {
 				setIsAuthenticated(true);
+				localStorage.setItem("token", "Bearer " + response.data.token);
 				return history.push("/chat");
 			} else {
 				setMessage("Invalid credentials");

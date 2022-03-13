@@ -4,19 +4,14 @@ import Layout from "./components/layout";
 import Box from "@mui/material/Box";
 import { useHistory } from "react-router-dom";
 import io from "socket.io-client";
-import { TextField } from "@mui/material";
+import { Container, TextField } from "@mui/material";
 import { Button } from "@mui/material";
-import Message from "./components/message";
-
-const socket = io.connect("http://localhost:3001");
+import "./css/style.css";
 
 const UserInfo = () => {
-
 	const history = useHistory();
-	
+
 	const [userId, setUserId] = useState("");
-	
-	
 
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -25,52 +20,43 @@ const UserInfo = () => {
 
 	Axios.defaults.withCredentials = true;
 
-	const isAuthenticated = () => {
-
-		Axios.get("http://localhost:3001/login").then((response) => {
-		
-		if (!response.data.loggedIn) {
-		
-		return history.push("/");
-		
-		}
-		
-		setUserId(response.data.user._id);
-		
-		});
-		
-	};
-
 	useEffect(() => {
-		
 		isAuthenticated();
 		console.log(userId);
-	}, [userId, name, email, password, confirmPassword ]);
-	
-	
-	const cancelForm = (event) => {
-        event.preventDefault();
-        history.back();
-    };
+	}, [userId]);
+
+	const isAuthenticated = () => {
+		Axios.get("http://localhost:3001/login").then((response) => {
+			if (!response.data.loggedIn) {
+				return history.push("/");
+			}
+			setName(response.data.user.name);
+			setEmail(response.data.user.email);
+			setUserId(response.data.user._id);
+		});
+	};
+
+	const cancelForm = () => {
+		return history.push("/chat");
+	};
 
 	const submitForm = (event) => {
-        event.preventDefault();
-        
-		Axios.patch(`http://localhost:3001/user/${userId}`, {name:name, email:email, password:password, confirmPassword:confirmPassword}).then((response) => {console.log(response)});
-       
+		event.preventDefault();
 
-    
-	};	
-	
+		Axios.patch(`http://localhost:3001/user/${userId}`, {
+			name: name,
+			email: email,
+			password: password,
+			confirmPassword: confirmPassword,
+		}).then((response) => {
+			console.log(response);
+		});
+	};
+
 	return (
 		<Layout>
-			<Box
-				sx={{
-					display: "flex",
-					flexDirection: "row",
-					flexGrow: 1,
-				}}
-			>
+			<Container>
+				<h1>Update Account Information</h1>
 				<form>
 					<TextField
 						value={name}
@@ -80,9 +66,8 @@ const UserInfo = () => {
 						onChange={(event) => {
 							setName(event.target.value);
 						}}
-					
 					/>
-					
+
 					<br />
 					<TextField
 						value={email}
@@ -93,7 +78,7 @@ const UserInfo = () => {
 							setEmail(event.target.value);
 						}}
 					/>
-					
+
 					<br />
 
 					<TextField
@@ -105,7 +90,7 @@ const UserInfo = () => {
 							setPassword(event.target.value);
 						}}
 					/>
-						<br />
+					<br />
 					<TextField
 						value={confirmPassword}
 						type="password"
@@ -118,12 +103,11 @@ const UserInfo = () => {
 					<br />
 					<br />
 					<Button
-					
 						variant="contained"
 						color="primary"
 						sx={{ pl: 3, pr: 3, ml: 38 }}
 						onClick={submitForm}
-						>
+					>
 						Update
 					</Button>
 					<Button
@@ -131,13 +115,11 @@ const UserInfo = () => {
 						color="primary"
 						sx={{ pl: 3, pr: 3, ml: 1 }}
 						onClick={cancelForm}
-						>
+					>
 						Cancel
 					</Button>
-
 				</form>
-	
-			</Box>
+			</Container>
 		</Layout>
 	);
 };
