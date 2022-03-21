@@ -18,7 +18,7 @@ form {
 	margin-bottom: 10px;
 	padding: 10px;
 	background-color: #a8ddfd;
-	width: 200px;
+	width: 300px;
 	height: 50px;
 	text-align: left;
 	font: 400 0.9em "Open Sans", sans-serif;
@@ -107,4 +107,16 @@ form {
 	border-right: 16px solid transparent;
 	bottom: -1px;
 	right: -17px;
+}
+
+.speech {
+	background-color: black;
+}
+
+.messageSection {
+	display: flex;
+	/* flex-direction: row; */
+	align-items: flex-start;
+	justify-content: space-between;
+	margin-right: -10px;
 }

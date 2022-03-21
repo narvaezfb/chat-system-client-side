@@ -10,10 +10,14 @@ import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import Message from "./components/message";
 import { Scrollbars } from "react-custom-scrollbars-2";
+import axios from "axios";
+import { useSpeechSynthesis } from "react-speech-kit";
+import moment from "moment";
 
 const socket = io.connect("http://localhost:3001");
 
 function Chat() {
+	const { speak } = useSpeechSynthesis();
 	const history = useHistory();
 	const [currentUserChat, setCurrentUserChat] = useState("");
 	const [userId, setUserId] = useState("");
@@ -21,11 +25,12 @@ function Chat() {
 	const [chats, setChats] = useState([]);
 	const [chatHistory, setChatHistory] = useState([]);
 	const [currentMessage, setCurrentMessage] = useState("");
+	const [editedMessage, setEditedMessage] = useState("");
 
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		recieveMessage();
+		// recieveMessage();
 		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, socket, chats]);
 
@@ -59,11 +64,14 @@ function Chat() {
 	};
 
 	const getCurrentChat = (event) => {
+		socket.disconnect();
+		socket.connect();
 		setChatHistory([]);
 		socket.emit("joined", event.currentTarget.id);
 		setChatRoom(event.currentTarget.id);
 		setCurrentUserChat(event.currentTarget.innerText);
 		getChatHistory(event.currentTarget.id);
+		recieveMessage();
 	};
 
 	const getChatHistory = (chatRoomID) => {
@@ -83,6 +91,9 @@ function Chat() {
 	};
 
 	const sendMessage = async () => {
+		const date = new Date();
+		const dateFormated = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+
 		if (currentMessage !== "") {
 			const messageData = {
 				From: userId,
@@ -92,6 +103,11 @@ function Chat() {
 
 			await socket.emit("send-message", messageData);
 
+			// if (chatHistory.length !== 0) {
+			// 	setChatHistory((list) => [...list, messageData]);
+			// 	return setCurrentMessage("");
+			// }
+
 			await Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
@@ -99,8 +115,38 @@ function Chat() {
 			}).then((response) => {
 				setChatHistory(response.data.data.messages);
 			});
-			setCurrentMessage("");
+			return setCurrentMessage("");
 		}
+	};
+
+	const handleEditMessage = (event) => {
+		if (event.currentTarget.id !== "") {
+			Axios.patch(
+				`http://localhost:3001/messages/${event.currentTarget.id}`,
+				{ message: editedMessage },
+				{
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				}
+			).then((response) => {
+				console.log(response);
+				getChatHistory(chatRoom);
+			});
+		}
+	};
+	const handleDeleteMessage = (event) => {
+		Axios.delete(`http://localhost:3001/messages/${event.currentTarget.id}`, {
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		}).then(() => {
+			getChatHistory(chatRoom);
+		});
+	};
+
+	const handleEditedMessage = (event) => {
+		setEditedMessage(event.target.value);
 	};
 
 	return (
@@ -140,6 +186,15 @@ function Chat() {
 											userID={userId}
 											fromUser={message.fromUser}
 											key={index}
+											id={message._id}
+											text={message.message}
+											handleEditMessage={handleEditMessage}
+											handleDeleteMessage={handleDeleteMessage}
+											handleTextToSpeech={() =>
+												speak({ text: message.message })
+											}
+											handleEditedMessage={handleEditedMessage}
+											editedMessage={editedMessage}
 										/>
 									);
 								})}
