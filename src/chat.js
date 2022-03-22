@@ -149,6 +149,10 @@ function Chat() {
 		setEditedMessage(event.target.value);
 	};
 
+	const convertDateFormat = (date) => {
+		return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+	};
+
 	return (
 		<Layout>
 			<Box
@@ -182,7 +186,7 @@ function Chat() {
 									return (
 										<Message
 											message={message.message}
-											time={message.createdAt}
+											time={convertDateFormat(message.createdAt)}
 											userID={userId}
 											fromUser={message.fromUser}
 											key={index}

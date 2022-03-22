@@ -47,14 +47,6 @@ export default function LongMenu({
 		setAnchorEl(null);
 	};
 
-	// const handleClickOpen = () => {
-	// 	setIsOpen(true);
-	// };
-
-	// const handleCloseDialog = () => {
-	// 	setIsOpen(false);
-	// };
-
 	const openDialog = () => {
 		setIsOpen(true);
 	};
@@ -134,7 +126,12 @@ export default function LongMenu({
 					</ListItemIcon>
 					<Typography variant="inherit">Delete</Typography>
 				</MenuItem>
-				<MenuItem onClick={handleTextToSpeech}>
+				<MenuItem
+					onClick={(event) => {
+						handleTextToSpeech(event);
+						closeDialog();
+					}}
+				>
 					<ListItemIcon>
 						<PlayArrowIcon fontSize="small" />
 					</ListItemIcon>
