@@ -13,6 +13,9 @@ import { Scrollbars } from "react-custom-scrollbars-2";
 import axios from "axios";
 import { useSpeechSynthesis } from "react-speech-kit";
 import moment from "moment";
+import MicIcon from "@mui/icons-material/Mic";
+import StopIcon from "@mui/icons-material/Stop";
+import { ReactMediaRecorder } from "react-media-recorder";
 
 const socket = io.connect("http://localhost:3001");
 
@@ -26,6 +29,7 @@ function Chat() {
 	const [chatHistory, setChatHistory] = useState([]);
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [editedMessage, setEditedMessage] = useState("");
+	const [isRecording, setIsRecording] = useState(false);
 
 	Axios.defaults.withCredentials = true;
 
@@ -209,6 +213,11 @@ function Chat() {
 						sx={{
 							display: "flex",
 							m: 1,
+							mt: 2,
+							gap: 1,
+							// alignContent: "center",
+							// justifyItems: "center",
+							// justifyContent: "center",
 						}}
 					>
 						<TextField
@@ -220,10 +229,51 @@ function Chat() {
 								setCurrentMessage(event.target.value);
 							}}
 						/>
+
+						<ReactMediaRecorder
+							audio
+							render={({
+								status,
+								startRecording,
+								stopRecording,
+								mediaBlobUrl,
+							}) => (
+								<Box
+									sx={{
+										display: "flex",
+
+										gap: 1,
+										// borderColor: "primary",
+									}}
+								>
+									<Button
+										sx={{ borderRadius: 1, border: 1 }}
+										onClick={() => {
+											startRecording();
+											setIsRecording(true);
+										}}
+									>
+										<MicIcon />
+									</Button>
+									{isRecording === true ? (
+										<Button
+											sx={{ borderRadius: 1, border: 1 }}
+											onClick={() => {
+												stopRecording();
+												setIsRecording(false);
+											}}
+										>
+											<StopIcon />
+										</Button>
+									) : null}
+								</Box>
+							)}
+						/>
+
 						<Button
 							variant="contained"
 							color="success"
-							sx={{ pl: 3, pr: 3, ml: 1 }}
+							sx={{ pl: 3, pr: 3 }}
 							onClick={sendMessage}
 						>
 							Send
