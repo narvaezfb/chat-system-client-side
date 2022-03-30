@@ -17,6 +17,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import StopIcon from "@mui/icons-material/Stop";
 import { ReactMediaRecorder } from "react-media-recorder";
 import MicRecorder from "mic-recorder-to-mp3";
+import AudioMessage from "./components/audioMessage";
 
 const socket = io.connect("http://localhost:3001");
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -90,27 +91,38 @@ function Chat() {
 			.catch((e) => console.log(e));
 	};
 
-	const sendAudioFile = (file) => {
+	const sendAudioFile = async (file) => {
 		let data = new FormData();
 		data.append("audio", file);
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
+
 		return Axios.post("http://localhost:3001/audioMessages", data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
 		}).then((res) => {
-			console.log(res.data.audioMessage._id);
+			console.log(res.data.audio.filename);
 			const data = {
 				message: "audio message",
 				chatRoom: chatRoom,
 				fromUser: userId,
 				messageFormat: "audio",
 				audio: res.data.audioMessage._id,
+				filename: res.data.audio.filename,
 			};
-			Axios.post("http://localhost:3001/messages", data).then((res) => {
-				console.log(res);
+
+			socket.emit("send-message", data);
+
+			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}).then((response) => {
+				setChatHistory(response.data.data.messages);
 			});
+
+			return setCurrentMessage("");
 		});
 	};
 
@@ -127,13 +139,14 @@ function Chat() {
 					}
 					setUserId(response.data.user._id);
 
-					Axios.get(`http://localhost:3001/userchats/${userId}`, {
-						headers: {
-							Authorization: localStorage.getItem("token"),
-						},
-					}).then((response) => {
-						setChats(response.data.data.chatRooms);
-					});
+					if (userId !== "")
+						Axios.get(`http://localhost:3001/userchats/${userId}`, {
+							headers: {
+								Authorization: localStorage.getItem("token"),
+							},
+						}).then((response) => {
+							setChats(response.data.data.chatRooms);
+						});
 				})
 				.catch(() => {
 					return history.push("/");
@@ -166,6 +179,7 @@ function Chat() {
 
 	const recieveMessage = () => {
 		socket.on("recieve-message", (retrieveCurrentChatHistory) => {
+			console.log(retrieveCurrentChatHistory);
 			setChatHistory(retrieveCurrentChatHistory);
 		});
 	};
@@ -278,6 +292,19 @@ function Chat() {
 												editedMessage={editedMessage}
 											/>
 										);
+									} else {
+										// if (message.audio.filename && message.audio.filename !== "")
+										return (
+											<AudioMessage
+												audio={message.filename}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												handleDeleteMessage={handleDeleteMessage}
+											/>
+										);
 									}
 								})}
 							</Scrollbars>
@@ -289,9 +316,6 @@ function Chat() {
 							m: 1,
 							mt: 2,
 							gap: 1,
-							// alignContent: "center",
-							// justifyItems: "center",
-							// justifyContent: "center",
 						}}
 					>
 						<TextField
