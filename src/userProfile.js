@@ -15,8 +15,8 @@ const UserInfo = () => {
 
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
+	// const [password, setPassword] = useState("");
+	// const [confirmPassword, setConfirmPassword] = useState("");
 
 	Axios.defaults.withCredentials = true;
 
@@ -46,8 +46,8 @@ const UserInfo = () => {
 		Axios.patch(`http://localhost:3001/user/${userId}`, {
 			name: name,
 			email: email,
-			password: password,
-			confirmPassword: confirmPassword,
+			// password: password,
+			// confirmPassword: confirmPassword,
 		}).then((response) => {
 			console.log(response);
 		});
@@ -55,71 +55,60 @@ const UserInfo = () => {
 
 	return (
 		<Layout>
-			<Container>
-				<h1>Update Account Information</h1>
-				<form>
-					<TextField
-						value={name}
-						type="text"
-						placeholder="Name"
-						sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 5 }}
-						onChange={(event) => {
-							setName(event.target.value);
-						}}
-					/>
+			<Box sx={{ display: "flex" }}>
+				<Box
+					sx={
+						{
+							// border: 1,
+							// width: 700,
+							// alignContent: "center",
+							// justifyContent: "center",
+						}
+					}
+				>
+					<form>
+						<TextField
+							value={name}
+							type="text"
+							placeholder="Name"
+							sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 5 }}
+							onChange={(event) => {
+								setName(event.target.value);
+							}}
+						/>
 
-					<br />
-					<TextField
-						value={email}
-						type="email"
-						placeholder="Email"
-						sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 3 }}
-						onChange={(event) => {
-							setEmail(event.target.value);
-						}}
-					/>
+						<br />
+						<TextField
+							value={email}
+							type="email"
+							placeholder="Email"
+							sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 3 }}
+							onChange={(event) => {
+								setEmail(event.target.value);
+							}}
+						/>
 
-					<br />
-
-					<TextField
-						value={password}
-						type="password"
-						placeholder="password"
-						sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 3 }}
-						onChange={(event) => {
-							setPassword(event.target.value);
-						}}
-					/>
-					<br />
-					<TextField
-						value={confirmPassword}
-						type="password"
-						placeholder="Confirm password"
-						sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 3 }}
-						onChange={(event) => {
-							setConfirmPassword(event.target.value);
-						}}
-					/>
-					<br />
-					<br />
-					<Button
-						variant="contained"
-						color="primary"
-						sx={{ pl: 3, pr: 3, ml: 38 }}
-						onClick={submitForm}
-					>
-						Update
-					</Button>
-					<Button
-						variant="contained"
-						color="primary"
-						sx={{ pl: 3, pr: 3, ml: 1 }}
-						onClick={cancelForm}
-					>
-						Cancel
-					</Button>
-				</form>
-			</Container>
+						<Box sx={{ display: "flex", mt: 2 }}>
+							<Button
+								variant="contained"
+								color="primary"
+								sx={{ pl: 3, pr: 3, ml: 38 }}
+								onClick={submitForm}
+							>
+								Update
+							</Button>
+							<Button
+								variant="contained"
+								color="primary"
+								sx={{ pl: 3, pr: 3, ml: 1 }}
+								onClick={cancelForm}
+							>
+								Cancel
+							</Button>
+						</Box>
+					</form>
+				</Box>
+			</Box>
 		</Layout>
 	);
 };
