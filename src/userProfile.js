@@ -26,14 +26,24 @@ const UserInfo = () => {
 	}, [userId]);
 
 	const isAuthenticated = () => {
-		Axios.get("http://localhost:3001/login").then((response) => {
-			if (!response.data.loggedIn) {
-				return history.push("/");
-			}
-			setName(response.data.user.name);
-			setEmail(response.data.user.email);
-			setUserId(response.data.user._id);
-		});
+		try {
+			Axios.get("http://localhost:3001/login", {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			})
+				.then((response) => {
+					if (!response.data.loggedIn) {
+						return history.push("/");
+					}
+					setUserId(response.data.user._id);
+				})
+				.catch(() => {
+					return history.push("/");
+				});
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	const cancelForm = () => {
@@ -46,10 +56,10 @@ const UserInfo = () => {
 		Axios.patch(`http://localhost:3001/user/${userId}`, {
 			name: name,
 			email: email,
-			// password: password,
-			// confirmPassword: confirmPassword,
 		}).then((response) => {
-			console.log(response);
+			console.log(response.data.data.user);
+
+			return history.push("/chat");
 		});
 	};
 
@@ -66,12 +76,15 @@ const UserInfo = () => {
 						}
 					}
 				>
-					<form>
+					<form onSubmit={submitForm}>
+						<Box sx={{ display: "flex", mt: 2, mx: 61 }}>
+							<h1 sx={{ pl: 390, pr: 300, mx: 100 }}> Update User Profile</h1>
+						</Box>
 						<TextField
 							value={name}
 							type="text"
 							placeholder="Name"
-							sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 5 }}
+							sx={{ pl: 3, pr: 3, ml: 60, paddingTop: 5 }}
 							onChange={(event) => {
 								setName(event.target.value);
 							}}
@@ -82,7 +95,7 @@ const UserInfo = () => {
 							value={email}
 							type="email"
 							placeholder="Email"
-							sx={{ pl: 3, pr: 3, ml: 35, paddingTop: 3 }}
+							sx={{ pl: 3, pr: 3, ml: 60, paddingTop: 3 }}
 							onChange={(event) => {
 								setEmail(event.target.value);
 							}}
@@ -92,8 +105,8 @@ const UserInfo = () => {
 							<Button
 								variant="contained"
 								color="primary"
-								sx={{ pl: 3, pr: 3, ml: 38 }}
-								onClick={submitForm}
+								sx={{ pl: 3, pr: 3, ml: 61 }}
+								type="submit"
 							>
 								Update
 							</Button>
