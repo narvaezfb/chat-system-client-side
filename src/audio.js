@@ -74,9 +74,11 @@ export default function Audio() {
 	};
 
 	const retrieveAudios = () => {
-		Axios.get("http://localhost:3001/audioMessages").then((response) => {
-			console.log(response.data.files);
-			setListAudios(response.data.files);
+		Axios.get(
+			"http://localhost:3001/audioMessages/chatRoom/6239db2f3c5ee90686656db3"
+		).then((response) => {
+			console.log(response.data.audioMessages);
+			setListAudios(response.data.audioMessages);
 		});
 	};
 

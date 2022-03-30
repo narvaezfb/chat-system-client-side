@@ -34,6 +34,7 @@ function Chat() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [isBlocked, setIsBlocked] = useState(false);
 	const [blobURL, setBlobURL] = useState("");
+	const [messageFormat, setMessageFormat] = useState("text");
 
 	Axios.defaults.withCredentials = true;
 
@@ -89,18 +90,27 @@ function Chat() {
 			.catch((e) => console.log(e));
 	};
 
-	const sendAudioFile = async (file) => {
+	const sendAudioFile = (file) => {
 		let data = new FormData();
 		data.append("audio", file);
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
-		return await Axios.post("http://localhost:3001/audioMessages/5", data, {
+		return Axios.post("http://localhost:3001/audioMessages", data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
 		}).then((res) => {
-			console.log(res);
-			return res;
+			console.log(res.data.audioMessage._id);
+			const data = {
+				message: "audio message",
+				chatRoom: chatRoom,
+				fromUser: userId,
+				messageFormat: "audio",
+				audio: res.data.audioMessage._id,
+			};
+			Axios.post("http://localhost:3001/messages", data).then((res) => {
+				console.log(res);
+			});
 		});
 	};
 
@@ -169,14 +179,10 @@ function Chat() {
 				From: userId,
 				chatRoom: chatRoom,
 				message: currentMessage,
+				messageFormat: messageFormat,
 			};
 
 			await socket.emit("send-message", messageData);
-
-			// if (chatHistory.length !== 0) {
-			// 	setChatHistory((list) => [...list, messageData]);
-			// 	return setCurrentMessage("");
-			// }
 
 			await Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
 				headers: {
@@ -253,24 +259,26 @@ function Chat() {
 						<Box sx={{ border: 1, m: 1, height: 545, pt: 1 }}>
 							<Scrollbars style={{ height: 500 }}>
 								{chatHistory?.map((message, index) => {
-									return (
-										<Message
-											message={message.message}
-											time={convertDateFormat(message.createdAt)}
-											userID={userId}
-											fromUser={message.fromUser}
-											key={index}
-											id={message._id}
-											text={message.message}
-											handleEditMessage={handleEditMessage}
-											handleDeleteMessage={handleDeleteMessage}
-											handleTextToSpeech={() =>
-												speak({ text: message.message })
-											}
-											handleEditedMessage={handleEditedMessage}
-											editedMessage={editedMessage}
-										/>
-									);
+									if (message.messageFormat == "text") {
+										return (
+											<Message
+												message={message.message}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												text={message.message}
+												handleEditMessage={handleEditMessage}
+												handleDeleteMessage={handleDeleteMessage}
+												handleTextToSpeech={() =>
+													speak({ text: message.message })
+												}
+												handleEditedMessage={handleEditedMessage}
+												editedMessage={editedMessage}
+											/>
+										);
+									}
 								})}
 							</Scrollbars>
 						</Box>
