@@ -9,6 +9,8 @@ export default function Audio() {
 	const [blobURL, setBlobURL] = useState("");
 	const [isBlocked, setIsBlocked] = useState(false);
 	const [listAudios, setListAudios] = useState([]);
+	const [newAudio, setNewAudio] = useState([]);
+	const [listImages, setListImages] = useState([]);
 
 	useEffect(() => {
 		console.log(listAudios);
@@ -44,7 +46,7 @@ export default function Audio() {
 			.then(([buffer, blob]) => {
 				console.log(blob);
 				const blobURL = URL.createObjectURL(blob);
-				var wavfromblob = new File([blob], "incomingaudioclip.mp3", {
+				var wavfromblob = new File([blob], "audio-message.mp3", {
 					type: "audio/mpeg",
 				});
 				console.log(wavfromblob);
@@ -60,11 +62,8 @@ export default function Audio() {
 
 	const sendAudioFile = async (url) => {
 		let data = new FormData();
-		data.append("User", "622788b02f28b849da923637");
-		data.append("message", "hola bebe");
-		data.append("chatRoom", "622eae4bc8929f0a04007e4f");
 		data.append("audio", url);
-		return await Axios.post("http://localhost:3001/messages/", data, {
+		return await Axios.post("http://localhost:3001/audioMessages/11111", data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -74,14 +73,36 @@ export default function Audio() {
 		});
 	};
 
+	const retrieveAudios = () => {
+		Axios.get("http://localhost:3001/audioMessages").then((response) => {
+			console.log(response.data.files);
+			setListAudios(response.data.files);
+		});
+	};
+
 	return (
 		<div className="App">
 			<header className="App-header">
 				<button onClick={startRecording}>Record</button>
 				<button onClick={stopRecording}>Stop</button>
-
-				{listAudios?.map((audio, index) => {
+				<button onClick={retrieveAudios}>retrieve files</button>
+				{/* {listAudios?.map((audio, index) => {
 					return <audio src={audio} controls="controls" />;
+				})} */}
+				{listImages?.map((image) => {
+					return (
+						<img
+							src={`http://localhost:3001/imageMessages/${image.filename}`}
+						></img>
+					);
+				})}
+				{listAudios?.map((audio) => {
+					return (
+						<audio
+							src={`http://localhost:3001/audioMessages/reproduce/${audio.filename}`}
+							controls="controls"
+						/>
+					);
 				})}
 			</header>
 		</div>

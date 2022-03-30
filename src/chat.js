@@ -16,8 +16,10 @@ import moment from "moment";
 import MicIcon from "@mui/icons-material/Mic";
 import StopIcon from "@mui/icons-material/Stop";
 import { ReactMediaRecorder } from "react-media-recorder";
+import MicRecorder from "mic-recorder-to-mp3";
 
 const socket = io.connect("http://localhost:3001");
+const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {
 	const { speak } = useSpeechSynthesis();
@@ -30,6 +32,8 @@ function Chat() {
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [editedMessage, setEditedMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
+	const [isBlocked, setIsBlocked] = useState(false);
+	const [blobURL, setBlobURL] = useState("");
 
 	Axios.defaults.withCredentials = true;
 
@@ -37,6 +41,68 @@ function Chat() {
 		// recieveMessage();
 		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, socket, chats]);
+
+	const checkPermissions = () => {
+		navigator.getUserMedia(
+			{ audio: true },
+			() => {
+				console.log("access granted");
+				setIsBlocked(false);
+			},
+			() => {
+				console.log("access denied");
+				setIsBlocked(true);
+			}
+		);
+	};
+
+	const startRecording = () => {
+		checkPermissions();
+		if (isBlocked) {
+			console.log("Permission Denied");
+		} else {
+			Mp3Recorder.start()
+				.then(() => {
+					setIsRecording(true);
+				})
+				.catch((e) => console.error(e));
+		}
+	};
+
+	const stopRecording = () => {
+		Mp3Recorder.stop()
+			.getMp3()
+			.then(([buffer, blob]) => {
+				console.log(blob);
+				const blobURL = URL.createObjectURL(blob);
+				var audioFile = new File([blob], "audio-message.mp3", {
+					type: "audio/mpeg",
+				});
+				console.log(audioFile);
+
+				setBlobURL(blobURL);
+				console.log(blobURL);
+				setIsRecording(false);
+				sendAudioFile(audioFile);
+				// setListAudios((list) => [...list, blobURL]);
+			})
+			.catch((e) => console.log(e));
+	};
+
+	const sendAudioFile = async (file) => {
+		let data = new FormData();
+		data.append("audio", file);
+		data.append("chatRoom", chatRoom);
+		data.append("fromUser", userId);
+		return await Axios.post("http://localhost:3001/audioMessages/5", data, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		}).then((res) => {
+			console.log(res);
+			return res;
+		});
+	};
 
 	const isAuthenticated = () => {
 		try {
@@ -230,45 +296,29 @@ function Chat() {
 							}}
 						/>
 
-						<ReactMediaRecorder
-							audio
-							render={({
-								status,
-								startRecording,
-								stopRecording,
-								mediaBlobUrl,
-							}) => (
-								<Box
-									sx={{
-										display: "flex",
+						<Box
+							sx={{
+								display: "flex",
 
-										gap: 1,
-										// borderColor: "primary",
-									}}
+								gap: 1,
+								// borderColor: "primary",
+							}}
+						>
+							<Button
+								sx={{ borderRadius: 1, border: 1 }}
+								onClick={startRecording}
+							>
+								<MicIcon />
+							</Button>
+							{isRecording === true ? (
+								<Button
+									sx={{ borderRadius: 1, border: 1 }}
+									onClick={stopRecording}
 								>
-									<Button
-										sx={{ borderRadius: 1, border: 1 }}
-										onClick={() => {
-											startRecording();
-											setIsRecording(true);
-										}}
-									>
-										<MicIcon />
-									</Button>
-									{isRecording === true ? (
-										<Button
-											sx={{ borderRadius: 1, border: 1 }}
-											onClick={() => {
-												stopRecording();
-												setIsRecording(false);
-											}}
-										>
-											<StopIcon />
-										</Button>
-									) : null}
-								</Box>
-							)}
-						/>
+									<StopIcon />
+								</Button>
+							) : null}
+						</Box>
 
 						<Button
 							variant="contained"
