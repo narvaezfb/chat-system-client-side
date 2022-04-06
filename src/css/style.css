@@ -197,3 +197,9 @@ form {
 	bottom: -1px;
 	right: -17px;
 }
+
+
+.imageMessage{
+	height: 200px;
+	width: 300px;
+}

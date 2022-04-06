@@ -18,6 +18,10 @@ import StopIcon from "@mui/icons-material/Stop";
 import { ReactMediaRecorder } from "react-media-recorder";
 import MicRecorder from "mic-recorder-to-mp3";
 import AudioMessage from "./components/audioMessage";
+import ImageMessage from "./components/imageMessage";
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+import { Fab } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 const socket = io.connect("http://localhost:3001");
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -36,11 +40,11 @@ function Chat() {
 	const [isBlocked, setIsBlocked] = useState(false);
 	const [blobURL, setBlobURL] = useState("");
 	const [messageFormat, setMessageFormat] = useState("text");
-
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [isText, setIstText] = useState(true);
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		// recieveMessage();
 		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, socket, chats]);
 
@@ -122,6 +126,52 @@ function Chat() {
 				setChatHistory(response.data.data.messages);
 			});
 
+			return setCurrentMessage("");
+		});
+	};
+
+	const changeStatus = () => {
+		setIstText(false);
+	};
+	const onFileChnage = (event) => {
+		setSelectedFile(event.target.files[0]);
+	};
+
+	const sendImage = () => {
+		sendImageFile(selectedFile);
+		setSelectedFile(null);
+	};
+	const sendImageFile = async (imageFile) => {
+		let data = new FormData();
+		data.append("image", imageFile);
+		data.append("chatRoom", chatRoom);
+		data.append("fromUser", userId);
+
+		return Axios.post("http://localhost:3001/imageMessages", data, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		}).then((res) => {
+			console.log(res);
+			const data = {
+				message: "image message",
+				chatRoom: chatRoom,
+				fromUser: userId,
+				messageFormat: "image",
+				image: res.data.imageMessage._id,
+				filename: res.data.image.filename,
+			};
+
+			socket.emit("send-message", data);
+
+			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}).then((response) => {
+				setChatHistory(response.data.data.messages);
+			});
+			setIstText(true);
 			return setCurrentMessage("");
 		});
 	};
@@ -292,11 +342,27 @@ function Chat() {
 												editedMessage={editedMessage}
 											/>
 										);
-									} else {
+									}
+									if (message.messageFormat == "audio") {
 										// if (message.audio.filename && message.audio.filename !== "")
 										return (
 											<AudioMessage
 												audio={message.filename}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												handleDeleteMessage={handleDeleteMessage}
+											/>
+										);
+									}
+
+									if (message.messageFormat == "image") {
+										// if (message.audio.filename && message.audio.filename !== "")
+										return (
+											<ImageMessage
+												image={message.filename}
 												time={convertDateFormat(message.createdAt)}
 												userID={userId}
 												fromUser={message.fromUser}
@@ -336,6 +402,24 @@ function Chat() {
 								// borderColor: "primary",
 							}}
 						>
+							<label htmlFor="upload-photo">
+								<input
+									style={{ display: "none" }}
+									id="upload-photo"
+									name="upload-photo"
+									type="file"
+									onChange={onFileChnage}
+									onClick={changeStatus}
+								/>
+								<Fab
+									color="primary"
+									// size="small"
+									component="span"
+									// aria-label="add"
+								>
+									<InsertPhotoIcon />
+								</Fab>
+							</label>
 							<Button
 								sx={{ borderRadius: 1, border: 1 }}
 								onClick={startRecording}
@@ -351,15 +435,25 @@ function Chat() {
 								</Button>
 							) : null}
 						</Box>
-
-						<Button
-							variant="contained"
-							color="success"
-							sx={{ pl: 3, pr: 3 }}
-							onClick={sendMessage}
-						>
-							Send
-						</Button>
+						{isText === true ? (
+							<Button
+								variant="contained"
+								color="success"
+								sx={{ pl: 3, pr: 3 }}
+								onClick={sendMessage}
+							>
+								Send
+							</Button>
+						) : (
+							<Button
+								variant="contained"
+								color="success"
+								sx={{ pl: 3, pr: 3 }}
+								onClick={sendImage}
+							>
+								<SendIcon />
+							</Button>
+						)}
 					</Box>
 				</Box>
 			</Box>

@@ -82,35 +82,31 @@ export default function Audio() {
 		});
 	};
 
+	const retrieveImages = () => {
+		Axios.get("http://localhost:3001/imageMessages").then((response) => {
+			console.log(response.data.files);
+			setListImages(response.data.files);
+		});
+	};
+
 	return (
 		<div className="App">
 			<header className="App-header">
 				<button onClick={startRecording}>Record</button>
 				<button onClick={stopRecording}>Stop</button>
-				<button onClick={retrieveAudios}>retrieve files</button>
+				<button onClick={retrieveImages}>retrieve files</button>
 				{/* {listAudios?.map((audio, index) => {
 					return <audio src={audio} controls="controls" />;
 				})} */}
 				{listImages?.map((image) => {
 					return (
 						<img
+							className="imageMessage"
 							src={`http://localhost:3001/imageMessages/${image.filename}`}
+							alt={image.filename}
 						></img>
 					);
 				})}
-				{listAudios?.map((audio) => {
-					return (
-						<audio
-							src={`http://localhost:3001/audioMessages/reproduce/${audio.filename}`}
-							controls="controls"
-						/>
-					);
-				})}
-				<audio
-					// src={`http://localhost:3001/audioMessages/reproduce/${audio.filename}`}
-					src="./media/audio-message-1648446371657.mp3"
-					controls="controls"
-				/>
 			</header>
 		</div>
 	);
