@@ -21,7 +21,7 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 	}, [personName, contactId]);
 
 	const getListOfUsers = () => {
-		Axios.get(`http://localhost:3001/users`, {
+		Axios.get(`https://chat-server-347304.nn.r.appspot.com/users`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},
@@ -42,9 +42,13 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 				userID1: userID1,
 				userID2: userID2,
 			};
-			Axios.post("http://localhost:3001/chatRooms", data, {
-				headers: { Authorization: localStorage.getItem("token") },
-			}).then((response) => {
+			Axios.post(
+				"https://chat-server-347304.nn.r.appspot.com/chatRooms",
+				data,
+				{
+					headers: { Authorization: localStorage.getItem("token") },
+				}
+			).then((response) => {
 				handleClose();
 				return history.push("/chat");
 			});

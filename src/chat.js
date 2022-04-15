@@ -21,7 +21,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-const socket = io.connect("https://chat-server-347304.nn.r.appspot.com/");
+const socket = io.connect("https://chat-server-347304.nn.r.appspot.com");
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {

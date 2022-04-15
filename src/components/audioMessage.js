@@ -19,7 +19,7 @@ function AudioMessage({
 			<div className="message-blue-audio">
 				<div className="messageSection">
 					<audio
-						src={`http://localhost:3005/audioMessages/reproduce/${audio}`}
+						src={`https://chat-server-347304.nn.r.appspot.com/audioMessages/reproduce/${audio}`}
 						controls="controls"
 					/>
 
@@ -34,7 +34,7 @@ function AudioMessage({
 			<div className="message-orange-audio" id={id}>
 				<div className="messageSection">
 					<audio
-						src={`http://localhost:3005/audioMessages/reproduce/${audio}`}
+						src={`https://chat-server-347304.nn.r.appspot.com/audioMessages/reproduce/${audio}`}
 						controls="controls"
 					/>
 

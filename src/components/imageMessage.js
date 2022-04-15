@@ -24,7 +24,7 @@ function ImageMesssage({
 						<CardMedia
 							component="img"
 							height="250"
-							image={`http://localhost:3005/imageMessages/${image}`}
+							image={`https://chat-server-347304.nn.r.appspot.com/imageMessages/${image}`}
 						/>
 						<CardActions sx={{ justifyContent: "flex-end" }}>
 							<Typography sx={{ fontSize: 12 }}>{time}</Typography>
@@ -41,7 +41,7 @@ function ImageMesssage({
 					<CardMedia
 						component="img"
 						height="250"
-						image={`http://localhost:3005/imageMessages/${image}`}
+						image={`https://chat-server-347304.nn.r.appspot.com/imageMessages/${image}`}
 					/>
 					<CardActions sx={{ justifyContent: "flex-end" }}>
 						<Typography sx={{ fontSize: 12 }}>{time}</Typography>
