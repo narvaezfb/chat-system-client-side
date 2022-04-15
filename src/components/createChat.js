@@ -16,12 +16,17 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 	const history = useHistory();
 	Axios.defaults.withCredentials = true;
 
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
+
 	React.useEffect(() => {
 		getListOfUsers();
 	}, [personName, contactId]);
 
 	const getListOfUsers = () => {
-		Axios.get(`http://localhost:3001/users`, {
+		Axios.get(`${url}/users`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},
@@ -42,7 +47,7 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 				userID1: userID1,
 				userID2: userID2,
 			};
-			Axios.post("http://localhost:3001/chatRooms", data, {
+			Axios.post(`${url}/chatRooms`, data, {
 				headers: { Authorization: localStorage.getItem("token") },
 			}).then((response) => {
 				handleClose();
