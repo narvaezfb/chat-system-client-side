@@ -19,6 +19,7 @@ const Login = () => {
 			headers: { Authorization: localStorage.getItem("token") },
 		})
 			.then((response) => {
+				console.log(response);
 				if (response.data.loggedIn) {
 					setIsAuthenticated(true);
 					return history.push("/chat");
@@ -38,6 +39,7 @@ const Login = () => {
 			email: userEmail,
 			password: userPassword,
 		}).then((response) => {
+			console.log(response);
 			if (response.data.auth) {
 				setIsAuthenticated(true);
 				localStorage.setItem("token", "Bearer " + response.data.token);
