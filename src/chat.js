@@ -28,8 +28,10 @@ function Chat() {
 	const { speak } = useSpeechSynthesis();
 	const history = useHistory();
 	const [currentUserChat, setCurrentUserChat] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [userId, setUserId] = useState("");
 	const [chatRoom, setChatRoom] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [chats, setChats] = useState([]);
 	const [chatHistory, setChatHistory] = useState([]);
 	const [currentMessage, setCurrentMessage] = useState("");
