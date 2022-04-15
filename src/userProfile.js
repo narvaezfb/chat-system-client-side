@@ -3,7 +3,7 @@ import Axios from "axios";
 import Layout from "./components/layout";
 import Box from "@mui/material/Box";
 import { useHistory } from "react-router-dom";
-import io from "socket.io-client";
+// eslint-disable-next-line no-unused-vars
 import { Container, TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import "./css/style.css";
@@ -15,19 +15,22 @@ const UserInfo = () => {
 
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
-	// const [password, setPassword] = useState("");
-	// const [confirmPassword, setConfirmPassword] = useState("");
+
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
 
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
 		isAuthenticated();
 		console.log(userId);
-	}, [userId]);
+	}, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const isAuthenticated = () => {
 		try {
-			Axios.get("http://localhost:3001/login", {
+			Axios.get(`${url}/login`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -53,7 +56,7 @@ const UserInfo = () => {
 	const submitForm = (event) => {
 		event.preventDefault();
 
-		Axios.patch(`http://localhost:3001/user/${userId}`, {
+		Axios.patch(`${url}/user/${userId}`, {
 			name: name,
 			email: email,
 		}).then((response) => {

@@ -9,12 +9,18 @@ const Login = () => {
 	const [userEmail, setUserEmail] = useState("");
 	const [userPassword, setUserPassword] = useState("");
 	const [message, setMessage] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const history = useHistory();
 	Axios.defaults.withCredentials = true;
 
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
+
 	useEffect(() => {
-		Axios.get("http://localhost:3001/login", {
+		Axios.get(`${url}/login`, {
 			headers: { Authorization: localStorage.getItem("token") },
 		})
 			.then((response) => {
@@ -26,14 +32,14 @@ const Login = () => {
 			.catch(() => {
 				return history.push("/");
 			});
-	}, [message]);
+	}, [message]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const login = async () => {
 		if (userEmail === "" || userPassword === "") {
 			return setMessage("please provide email and password");
 		}
 
-		await Axios.post("/login", {
+		await Axios.post(`${url}/login`, {
 			email: userEmail,
 			password: userPassword,
 		}).then((response) => {

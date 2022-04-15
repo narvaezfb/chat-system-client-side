@@ -10,12 +10,10 @@ import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import Message from "./components/message";
 import { Scrollbars } from "react-custom-scrollbars-2";
-import axios from "axios";
 import { useSpeechSynthesis } from "react-speech-kit";
 import moment from "moment";
 import MicIcon from "@mui/icons-material/Mic";
 import StopIcon from "@mui/icons-material/Stop";
-import { ReactMediaRecorder } from "react-media-recorder";
 import MicRecorder from "mic-recorder-to-mp3";
 import AudioMessage from "./components/audioMessage";
 import ImageMessage from "./components/imageMessage";
@@ -23,7 +21,13 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-const socket = io.connect("http://localhost:3001");
+var socket;
+if (process.env.NODE_ENV === "development") {
+	socket = io.connect(process.env.REACT_APP_LOCALHOST_URL);
+} else {
+	socket = io.connect(process.env.REACT_APP_BACK_END_URL);
+}
+
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {
@@ -38,15 +42,22 @@ function Chat() {
 	const [editedMessage, setEditedMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
 	const [isBlocked, setIsBlocked] = useState(false);
+	// eslint-disable-next-line no-unused-vars
 	const [blobURL, setBlobURL] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [messageFormat, setMessageFormat] = useState("text");
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isText, setIstText] = useState(true);
 	Axios.defaults.withCredentials = true;
 
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
+
 	useEffect(() => {
 		isAuthenticated();
-	}, [userId, chatRoom, chatHistory, socket, chats]);
+	}, [userId, chatRoom, chatHistory, socket, chats]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const checkPermissions = () => {
 		navigator.getUserMedia(
@@ -101,7 +112,7 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3001/audioMessages", data, {
+		return Axios.post(`${url}/audioMessages`, data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -118,7 +129,7 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			Axios.get(`${url}/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -147,7 +158,7 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3001/imageMessages", data, {
+		return Axios.post(`${url}/imageMessages`, data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -164,7 +175,7 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			Axios.get(`${url}/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -178,7 +189,7 @@ function Chat() {
 
 	const isAuthenticated = () => {
 		try {
-			Axios.get("http://localhost:3001/login", {
+			Axios.get(`${url}/login`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -190,7 +201,7 @@ function Chat() {
 					setUserId(response.data.user._id);
 
 					if (userId !== "")
-						Axios.get(`http://localhost:3001/userchats/${userId}`, {
+						Axios.get(`${url}/userchats/${userId}`, {
 							headers: {
 								Authorization: localStorage.getItem("token"),
 							},
@@ -218,7 +229,7 @@ function Chat() {
 	};
 
 	const getChatHistory = (chatRoomID) => {
-		Axios.get(`http://localhost:3001/chatRoom/${chatRoomID}/messages`, {
+		Axios.get(`${url}/chatRoom/${chatRoomID}/messages`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},
@@ -235,9 +246,6 @@ function Chat() {
 	};
 
 	const sendMessage = async () => {
-		const date = new Date();
-		const dateFormated = moment(date).format("MMMM Do YYYY, h:mm:ss a");
-
 		if (currentMessage !== "") {
 			const messageData = {
 				From: userId,
@@ -248,7 +256,7 @@ function Chat() {
 
 			await socket.emit("send-message", messageData);
 
-			await Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			await Axios.get(`${url}/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -262,7 +270,7 @@ function Chat() {
 	const handleEditMessage = (event) => {
 		if (event.currentTarget.id !== "") {
 			Axios.patch(
-				`http://localhost:3001/messages/${event.currentTarget.id}`,
+				`${url}/messages/${event.currentTarget.id}`,
 				{ message: editedMessage },
 				{
 					headers: {
@@ -276,7 +284,7 @@ function Chat() {
 		}
 	};
 	const handleDeleteMessage = (event) => {
-		Axios.delete(`http://localhost:3001/messages/${event.currentTarget.id}`, {
+		Axios.delete(`${url}/messages/${event.currentTarget.id}`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},
@@ -323,7 +331,7 @@ function Chat() {
 						<Box sx={{ border: 1, m: 1, height: 545, pt: 1 }}>
 							<Scrollbars style={{ height: 500 }}>
 								{chatHistory?.map((message, index) => {
-									if (message.messageFormat == "text") {
+									if (message.messageFormat === "text") {
 										return (
 											<Message
 												message={message.message}
@@ -343,7 +351,7 @@ function Chat() {
 											/>
 										);
 									}
-									if (message.messageFormat == "audio") {
+									if (message.messageFormat === "audio") {
 										// if (message.audio.filename && message.audio.filename !== "")
 										return (
 											<AudioMessage
@@ -358,7 +366,7 @@ function Chat() {
 										);
 									}
 
-									if (message.messageFormat == "image") {
+									if (message.messageFormat === "image") {
 										// if (message.audio.filename && message.audio.filename !== "")
 										return (
 											<ImageMessage
@@ -372,6 +380,7 @@ function Chat() {
 											/>
 										);
 									}
+									return <h1>message</h1>;
 								})}
 							</Scrollbars>
 						</Box>
