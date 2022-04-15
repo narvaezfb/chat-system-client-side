@@ -60,16 +60,20 @@ function Chat() {
 				crossDomain: true,
 			})
 				.then((response) => {
+					console.log(response);
 					if (!response.data.loggedIn) {
 						return history.push("/");
 					}
 					setUserId(response.data.user._id);
 					if (userId !== "")
-						Axios.get(`https://chat-server-347304.nn.r.appspot.com/${userId}`, {
-							headers: {
-								Authorization: localStorage.getItem("token"),
-							},
-						}).then((response) => {
+						Axios.get(
+							`https://chat-server-347304.nn.r.appspot.com/userchats/${userId}`,
+							{
+								headers: {
+									Authorization: localStorage.getItem("token"),
+								},
+							}
+						).then((response) => {
 							setChats(response.data.data.chatRooms);
 						});
 				})
