@@ -18,25 +18,13 @@ function ImageMesssage({
 }) {
 	if (userID === fromUser) {
 		return (
-			// <div className="message-blue-audio">
-			// 	<div className="messageSection">
-			// 		<img
-			// 			className="imageMessage"
-			// 			src={`http://localhost:3001/imageMessages/${image}`}
-			// 		/>
-
-			// 		<Menu handleDeleteMessage={handleDeleteMessage} id={id} />
-			// 	</div>
-
-			// 	<div className="message-timestamp-left">{time}</div>
-			// </div>
 			<Box>
 				<Box sx={{ display: "flex", justifyContent: "flex-start", margin: 2 }}>
 					<Card sx={{ maxWidth: 345, border: 1 }}>
 						<CardMedia
 							component="img"
 							height="250"
-							image={`http://localhost:3001/imageMessages/${image}`}
+							image={`http://localhost:3005/imageMessages/${image}`}
 						/>
 						<CardActions sx={{ justifyContent: "flex-end" }}>
 							<Typography sx={{ fontSize: 12 }}>{time}</Typography>
@@ -53,7 +41,7 @@ function ImageMesssage({
 					<CardMedia
 						component="img"
 						height="250"
-						image={`http://localhost:3001/imageMessages/${image}`}
+						image={`http://localhost:3005/imageMessages/${image}`}
 					/>
 					<CardActions sx={{ justifyContent: "flex-end" }}>
 						<Typography sx={{ fontSize: 12 }}>{time}</Typography>

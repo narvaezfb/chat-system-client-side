@@ -21,7 +21,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("http://localhost:3005");
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {
@@ -47,7 +47,7 @@ function Chat() {
 	useEffect(() => {
 		const isAuthenticated = () => {
 			try {
-				Axios.get("http://localhost:3001/login", {
+				Axios.get("http://localhost:3005/login", {
 					headers: {
 						Authorization: localStorage.getItem("token"),
 					},
@@ -59,7 +59,7 @@ function Chat() {
 						setUserId(response.data.user._id);
 
 						if (userId !== "")
-							Axios.get(`http://localhost:3001/userchats/${userId}`, {
+							Axios.get(`http://localhost:3005/userchats/${userId}`, {
 								headers: {
 									Authorization: localStorage.getItem("token"),
 								},
@@ -76,7 +76,7 @@ function Chat() {
 		};
 
 		isAuthenticated();
-	}, [userId, chatRoom, chatHistory, socket, chats]);
+	}, [userId, chatRoom, chatHistory, chats, history]);
 
 	const checkPermissions = () => {
 		navigator.getUserMedia(
@@ -131,7 +131,7 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3001/audioMessages", data, {
+		return Axios.post("http://localhost:3005/audioMessages", data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -148,7 +148,7 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -177,7 +177,7 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3001/imageMessages", data, {
+		return Axios.post("http://localhost:3005/imageMessages", data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -194,7 +194,7 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -218,7 +218,7 @@ function Chat() {
 	};
 
 	const getChatHistory = (chatRoomID) => {
-		Axios.get(`http://localhost:3001/chatRoom/${chatRoomID}/messages`, {
+		Axios.get(`http://localhost:3005/chatRoom/${chatRoomID}/messages`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},
@@ -245,7 +245,7 @@ function Chat() {
 
 			await socket.emit("send-message", messageData);
 
-			await Axios.get(`http://localhost:3001/chatRoom/${chatRoom}/messages`, {
+			await Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
@@ -259,7 +259,7 @@ function Chat() {
 	const handleEditMessage = (event) => {
 		if (event.currentTarget.id !== "") {
 			Axios.patch(
-				`http://localhost:3001/messages/${event.currentTarget.id}`,
+				`http://localhost:3005/messages/${event.currentTarget.id}`,
 				{ message: editedMessage },
 				{
 					headers: {
@@ -273,7 +273,7 @@ function Chat() {
 		}
 	};
 	const handleDeleteMessage = (event) => {
-		Axios.delete(`http://localhost:3001/messages/${event.currentTarget.id}`, {
+		Axios.delete(`http://localhost:3005/messages/${event.currentTarget.id}`, {
 			headers: {
 				Authorization: localStorage.getItem("token"),
 			},

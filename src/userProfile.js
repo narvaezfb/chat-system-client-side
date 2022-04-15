@@ -22,7 +22,7 @@ const UserInfo = () => {
 	useEffect(() => {
 		const isAuthenticated = () => {
 			try {
-				Axios.get("http://localhost:3001/login", {
+				Axios.get("http://localhost:3005/login", {
 					headers: {
 						Authorization: localStorage.getItem("token"),
 					},
@@ -42,7 +42,7 @@ const UserInfo = () => {
 		};
 		isAuthenticated();
 		console.log(userId);
-	}, [userId]);
+	}, [userId, history]);
 
 	const cancelForm = () => {
 		return history.push("/chat");
@@ -51,7 +51,7 @@ const UserInfo = () => {
 	const submitForm = (event) => {
 		event.preventDefault();
 
-		Axios.patch(`http://localhost:3001/user/${userId}`, {
+		Axios.patch(`http://localhost:3005/user/${userId}`, {
 			name: name,
 			email: email,
 		}).then((response) => {

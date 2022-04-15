@@ -15,7 +15,7 @@ const Login = () => {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		Axios.get("http://localhost:3001/login", {
+		Axios.get("http://localhost:3005/login", {
 			headers: { Authorization: localStorage.getItem("token") },
 		})
 			.then((response) => {
@@ -27,14 +27,14 @@ const Login = () => {
 			.catch(() => {
 				return history.push("/");
 			});
-	}, [message]);
+	}, [message, history]);
 
 	const login = async () => {
 		if (userEmail === "" || userPassword === "") {
 			return setMessage("please provide email and password");
 		}
 
-		await Axios.post("/login", {
+		await Axios.post("http://localhost:3005/login", {
 			email: userEmail,
 			password: userPassword,
 		}).then((response) => {
