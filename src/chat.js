@@ -21,7 +21,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-const socket = io.connect("http://localhost:3005");
+const socket = io.connect("https://chat-server-347304.nn.r.appspot.com/");
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {
@@ -47,7 +47,7 @@ function Chat() {
 	useEffect(() => {
 		const isAuthenticated = () => {
 			try {
-				Axios.get("http://localhost:3005/login", {
+				Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
 					headers: {
 						Authorization: localStorage.getItem("token"),
 					},
@@ -59,11 +59,14 @@ function Chat() {
 						setUserId(response.data.user._id);
 
 						if (userId !== "")
-							Axios.get(`http://localhost:3005/userchats/${userId}`, {
-								headers: {
-									Authorization: localStorage.getItem("token"),
-								},
-							}).then((response) => {
+							Axios.get(
+								`https://chat-server-347304.nn.r.appspot.com/${userId}`,
+								{
+									headers: {
+										Authorization: localStorage.getItem("token"),
+									},
+								}
+							).then((response) => {
 								setChats(response.data.data.chatRooms);
 							});
 					})
@@ -131,11 +134,15 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3005/audioMessages", data, {
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		}).then((res) => {
+		return Axios.post(
+			"https://chat-server-347304.nn.r.appspot.com/audioMessages",
+			data,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}
+		).then((res) => {
 			console.log(res.data.audio.filename);
 			const data = {
 				message: "audio message",
@@ -148,11 +155,14 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			}).then((response) => {
+			Axios.get(
+				`https://chat-server-347304.nn.r.appspot.com/chatRoom/${chatRoom}/messages`,
+				{
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				}
+			).then((response) => {
 				setChatHistory(response.data.data.messages);
 			});
 
@@ -177,11 +187,15 @@ function Chat() {
 		data.append("chatRoom", chatRoom);
 		data.append("fromUser", userId);
 
-		return Axios.post("http://localhost:3005/imageMessages", data, {
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		}).then((res) => {
+		return Axios.post(
+			"https://chat-server-347304.nn.r.appspot.com/imageMessages",
+			data,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}
+		).then((res) => {
 			console.log(res);
 			const data = {
 				message: "image message",
@@ -194,11 +208,14 @@ function Chat() {
 
 			socket.emit("send-message", data);
 
-			Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			}).then((response) => {
+			Axios.get(
+				`https://chat-server-347304.nn.r.appspot.com/chatRoom/${chatRoom}/messages`,
+				{
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				}
+			).then((response) => {
 				setChatHistory(response.data.data.messages);
 			});
 			setIstText(true);
@@ -218,11 +235,14 @@ function Chat() {
 	};
 
 	const getChatHistory = (chatRoomID) => {
-		Axios.get(`http://localhost:3005/chatRoom/${chatRoomID}/messages`, {
-			headers: {
-				Authorization: localStorage.getItem("token"),
-			},
-		}).then((response) => {
+		Axios.get(
+			`https://chat-server-347304.nn.r.appspot.com/chatRoom/${chatRoomID}/messages`,
+			{
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}
+		).then((response) => {
 			setChatHistory(response.data.data.messages);
 		});
 	};
@@ -245,11 +265,14 @@ function Chat() {
 
 			await socket.emit("send-message", messageData);
 
-			await Axios.get(`http://localhost:3005/chatRoom/${chatRoom}/messages`, {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			}).then((response) => {
+			await Axios.get(
+				`https://chat-server-347304.nn.r.appspot.com/chatRoom/${chatRoom}/messages`,
+				{
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				}
+			).then((response) => {
 				setChatHistory(response.data.data.messages);
 			});
 			return setCurrentMessage("");
@@ -259,7 +282,7 @@ function Chat() {
 	const handleEditMessage = (event) => {
 		if (event.currentTarget.id !== "") {
 			Axios.patch(
-				`http://localhost:3005/messages/${event.currentTarget.id}`,
+				`https://chat-server-347304.nn.r.appspot.com/messages/${event.currentTarget.id}`,
 				{ message: editedMessage },
 				{
 					headers: {
@@ -273,11 +296,14 @@ function Chat() {
 		}
 	};
 	const handleDeleteMessage = (event) => {
-		Axios.delete(`http://localhost:3005/messages/${event.currentTarget.id}`, {
-			headers: {
-				Authorization: localStorage.getItem("token"),
-			},
-		}).then(() => {
+		Axios.delete(
+			`https://chat-server-347304.nn.r.appspot.com/messages/${event.currentTarget.id}`,
+			{
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}
+		).then(() => {
 			getChatHistory(chatRoom);
 		});
 	};

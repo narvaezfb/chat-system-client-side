@@ -15,7 +15,7 @@ const Login = () => {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		Axios.get("http://localhost:3005/login", {
+		Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
 			headers: { Authorization: localStorage.getItem("token") },
 		})
 			.then((response) => {
@@ -34,7 +34,7 @@ const Login = () => {
 			return setMessage("please provide email and password");
 		}
 
-		await Axios.post("http://localhost:3005/login", {
+		await Axios.post("https://chat-server-347304.nn.r.appspot.com/login", {
 			email: userEmail,
 			password: userPassword,
 		}).then((response) => {

@@ -22,7 +22,7 @@ const UserInfo = () => {
 	useEffect(() => {
 		const isAuthenticated = () => {
 			try {
-				Axios.get("http://localhost:3005/login", {
+				Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
 					headers: {
 						Authorization: localStorage.getItem("token"),
 					},
@@ -51,7 +51,7 @@ const UserInfo = () => {
 	const submitForm = (event) => {
 		event.preventDefault();
 
-		Axios.patch(`http://localhost:3005/user/${userId}`, {
+		Axios.patch(`https://chat-server-347304.nn.r.appspot.com/user/${userId}`, {
 			name: name,
 			email: email,
 		}).then((response) => {
