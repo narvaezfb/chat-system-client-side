@@ -23,7 +23,7 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 
 	React.useEffect(() => {
 		getListOfUsers();
-	}, [personName, contactId]);
+	}, [personName, contactId]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const getListOfUsers = () => {
 		Axios.get(`${url}/users`, {
