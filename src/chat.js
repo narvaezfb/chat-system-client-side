@@ -47,6 +47,7 @@ function Chat() {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
+		console.log("main branch");
 		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, chats]); // eslint-disable-line react-hooks/exhaustive-deps
 
