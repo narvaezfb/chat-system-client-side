@@ -60,7 +60,6 @@ function Chat() {
 				crossDomain: true,
 			})
 				.then((response) => {
-					console.log(response);
 					if (!response.data.loggedIn) {
 						return history.push("/");
 					}
