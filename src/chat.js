@@ -47,38 +47,38 @@ function Chat() {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
-		// const isAuthenticated = () => {
-		// 	try {
-		// 		Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
-		// 			headers: {
-		// 				Authorization: localStorage.getItem("token"),
-		// 			},
-		// 		})
-		// 			.then((response) => {
-		// 				if (!response.data.loggedIn) {
-		// 					return history.push("/");
-		// 				}
-		// 				setUserId(response.data.user._id);
-		// 				if (userId !== "")
-		// 					Axios.get(
-		// 						`https://chat-server-347304.nn.r.appspot.com/${userId}`,
-		// 						{
-		// 							headers: {
-		// 								Authorization: localStorage.getItem("token"),
-		// 							},
-		// 						}
-		// 					).then((response) => {
-		// 						setChats(response.data.data.chatRooms);
-		// 					});
-		// 			})
-		// 			.catch(() => {
-		// 				return history.push("/");
-		// 			});
-		// 	} catch (err) {
-		// 		console.log(err);
-		// 	}
-		// };
-		// isAuthenticated();
+		const isAuthenticated = () => {
+			try {
+				Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				})
+					.then((response) => {
+						if (!response.data.loggedIn) {
+							return history.push("/");
+						}
+						setUserId(response.data.user._id);
+						if (userId !== "")
+							Axios.get(
+								`https://chat-server-347304.nn.r.appspot.com/${userId}`,
+								{
+									headers: {
+										Authorization: localStorage.getItem("token"),
+									},
+								}
+							).then((response) => {
+								setChats(response.data.data.chatRooms);
+							});
+					})
+					.catch(() => {
+						return history.push("/");
+					});
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, chats, history]);
 
 	const checkPermissions = () => {
