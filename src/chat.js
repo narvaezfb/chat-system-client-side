@@ -79,7 +79,7 @@ function Chat() {
 			}
 		};
 		isAuthenticated();
-	}, [userId, chatRoom, chatHistory, chats, history]);
+	}, [userId, chatRoom, chatHistory, chats]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const checkPermissions = () => {
 		navigator.getUserMedia(
