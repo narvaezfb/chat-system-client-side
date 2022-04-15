@@ -9,6 +9,7 @@ const Login = () => {
 	const [userEmail, setUserEmail] = useState("");
 	const [userPassword, setUserPassword] = useState("");
 	const [message, setMessage] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const history = useHistory();
 	Axios.defaults.withCredentials = true;

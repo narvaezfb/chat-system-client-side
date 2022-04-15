@@ -10,12 +10,10 @@ import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import Message from "./components/message";
 import { Scrollbars } from "react-custom-scrollbars-2";
-import axios from "axios";
 import { useSpeechSynthesis } from "react-speech-kit";
 import moment from "moment";
 import MicIcon from "@mui/icons-material/Mic";
 import StopIcon from "@mui/icons-material/Stop";
-import { ReactMediaRecorder } from "react-media-recorder";
 import MicRecorder from "mic-recorder-to-mp3";
 import AudioMessage from "./components/audioMessage";
 import ImageMessage from "./components/imageMessage";
@@ -38,13 +36,45 @@ function Chat() {
 	const [editedMessage, setEditedMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
 	const [isBlocked, setIsBlocked] = useState(false);
+	// eslint-disable-next-line no-unused-vars
 	const [blobURL, setBlobURL] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [messageFormat, setMessageFormat] = useState("text");
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isText, setIstText] = useState(true);
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
+		const isAuthenticated = () => {
+			try {
+				Axios.get("http://localhost:3001/login", {
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				})
+					.then((response) => {
+						if (!response.data.loggedIn) {
+							return history.push("/");
+						}
+						setUserId(response.data.user._id);
+
+						if (userId !== "")
+							Axios.get(`http://localhost:3001/userchats/${userId}`, {
+								headers: {
+									Authorization: localStorage.getItem("token"),
+								},
+							}).then((response) => {
+								setChats(response.data.data.chatRooms);
+							});
+					})
+					.catch(() => {
+						return history.push("/");
+					});
+			} catch (err) {
+				console.log(err);
+			}
+		};
+
 		isAuthenticated();
 	}, [userId, chatRoom, chatHistory, socket, chats]);
 
@@ -176,36 +206,6 @@ function Chat() {
 		});
 	};
 
-	const isAuthenticated = () => {
-		try {
-			Axios.get("http://localhost:3001/login", {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			})
-				.then((response) => {
-					if (!response.data.loggedIn) {
-						return history.push("/");
-					}
-					setUserId(response.data.user._id);
-
-					if (userId !== "")
-						Axios.get(`http://localhost:3001/userchats/${userId}`, {
-							headers: {
-								Authorization: localStorage.getItem("token"),
-							},
-						}).then((response) => {
-							setChats(response.data.data.chatRooms);
-						});
-				})
-				.catch(() => {
-					return history.push("/");
-				});
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	const getCurrentChat = (event) => {
 		socket.disconnect();
 		socket.connect();
@@ -235,9 +235,6 @@ function Chat() {
 	};
 
 	const sendMessage = async () => {
-		const date = new Date();
-		const dateFormated = moment(date).format("MMMM Do YYYY, h:mm:ss a");
-
 		if (currentMessage !== "") {
 			const messageData = {
 				From: userId,
@@ -323,7 +320,7 @@ function Chat() {
 						<Box sx={{ border: 1, m: 1, height: 545, pt: 1 }}>
 							<Scrollbars style={{ height: 500 }}>
 								{chatHistory?.map((message, index) => {
-									if (message.messageFormat == "text") {
+									if (message.messageFormat === "text") {
 										return (
 											<Message
 												message={message.message}
@@ -343,7 +340,7 @@ function Chat() {
 											/>
 										);
 									}
-									if (message.messageFormat == "audio") {
+									if (message.messageFormat === "audio") {
 										// if (message.audio.filename && message.audio.filename !== "")
 										return (
 											<AudioMessage
@@ -358,7 +355,7 @@ function Chat() {
 										);
 									}
 
-									if (message.messageFormat == "image") {
+									if (message.messageFormat === "image") {
 										// if (message.audio.filename && message.audio.filename !== "")
 										return (
 											<ImageMessage
@@ -372,6 +369,7 @@ function Chat() {
 											/>
 										);
 									}
+									return <h1>message</h1>;
 								})}
 							</Scrollbars>
 						</Box>

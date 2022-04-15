@@ -3,8 +3,7 @@ import Axios from "axios";
 import Layout from "./components/layout";
 import Box from "@mui/material/Box";
 import { useHistory } from "react-router-dom";
-import io from "socket.io-client";
-import { Container, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import "./css/style.css";
 
@@ -21,30 +20,29 @@ const UserInfo = () => {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
+		const isAuthenticated = () => {
+			try {
+				Axios.get("http://localhost:3001/login", {
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				})
+					.then((response) => {
+						if (!response.data.loggedIn) {
+							return history.push("/");
+						}
+						setUserId(response.data.user._id);
+					})
+					.catch(() => {
+						return history.push("/");
+					});
+			} catch (err) {
+				console.log(err);
+			}
+		};
 		isAuthenticated();
 		console.log(userId);
 	}, [userId]);
-
-	const isAuthenticated = () => {
-		try {
-			Axios.get("http://localhost:3001/login", {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			})
-				.then((response) => {
-					if (!response.data.loggedIn) {
-						return history.push("/");
-					}
-					setUserId(response.data.user._id);
-				})
-				.catch(() => {
-					return history.push("/");
-				});
-		} catch (err) {
-			console.log(err);
-		}
-	};
 
 	const cancelForm = () => {
 		return history.push("/chat");

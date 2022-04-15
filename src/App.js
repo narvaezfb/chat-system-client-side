@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Chat from "./chat";
 import Login from "./login";
 import Profile from "./userProfile";
-import Audio from "./audio";
 
 function App() {
 	return (
@@ -19,9 +18,6 @@ function App() {
 				</Route>
 				<Route path="/user/userProfile">
 					<Profile />
-				</Route>
-				<Route path="/audio">
-					<Audio />
 				</Route>
 			</Switch>
 		</Router>

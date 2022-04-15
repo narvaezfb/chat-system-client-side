@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import ChatIcon from "@mui/icons-material/Chat";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link } from "@mui/material";
 import SettingsMenu from "./settings";
 
 const Search = styled("div")(({ theme }) => ({

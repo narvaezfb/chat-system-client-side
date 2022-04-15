@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import react from "react";
+// eslint-disable-next-line no-unused-vars
 import Speech from "react-speech";
 import Menu from "./messageMenu";
 import "./../css/style.css";
