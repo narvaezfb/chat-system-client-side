@@ -56,6 +56,8 @@ function Chat() {
 				headers: {
 					Authorization: localStorage.getItem("token"),
 				},
+				credentials: "include",
+				crossDomain: true,
 			})
 				.then((response) => {
 					if (!response.data.loggedIn) {

@@ -17,6 +17,8 @@ const Login = () => {
 	useEffect(() => {
 		Axios.get("https://chat-server-347304.nn.r.appspot.com/login", {
 			headers: { Authorization: localStorage.getItem("token") },
+			credentials: "include",
+			crossDomain: true,
 		})
 			.then((response) => {
 				console.log(response);
