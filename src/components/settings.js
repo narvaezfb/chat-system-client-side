@@ -4,6 +4,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useHistory } from "react-router-dom";
+import Axios from "axios";
 
 export default function SettingsMenu() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
@@ -18,6 +19,13 @@ export default function SettingsMenu() {
 
 	const goToUserProfilePage = () => {
 		return history.push("/user/userProfile");
+	};
+
+	const logout = () => {
+		Axios.get("http://localhost:3001/logout").then((response) => {
+			console.log(response);
+			return history.push("/");
+		});
 	};
 
 	return (
@@ -49,7 +57,7 @@ export default function SettingsMenu() {
 			>
 				<MenuItem onClick={goToUserProfilePage}>Profile</MenuItem>
 				<MenuItem onClick={handleClose}>My account</MenuItem>
-				<MenuItem onClick={handleClose}>Logout</MenuItem>
+				<MenuItem onClick={logout}>Logout</MenuItem>
 			</Menu>
 		</div>
 	);

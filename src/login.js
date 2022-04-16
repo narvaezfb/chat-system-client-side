@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { TextField, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 const Login = () => {
 	const [userEmail, setUserEmail] = useState("");
@@ -101,6 +102,17 @@ const Login = () => {
 				>
 					Submit
 				</Button>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "center",
+						mt: 1,
+					}}
+				>
+					<Typography>
+						Don't have an account? <Link href="/signup"> Register</Link>
+					</Typography>
+				</Box>
 				<Box
 					sx={{
 						display: "flex",

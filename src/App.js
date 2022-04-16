@@ -2,15 +2,16 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Chat from "./chat";
 import Login from "./login";
 import Profile from "./userProfile";
+import Signup from "./signup";
 
 function App() {
 	return (
 		<Router>
 			<Switch>
-				{/* <Route path="/">
-					<Login />
-				</Route> */}
 				<Route exact path="/">
+					<Login />
+				</Route>
+				<Route path="/login">
 					<Login />
 				</Route>
 				<Route path="/chat">
@@ -18,6 +19,9 @@ function App() {
 				</Route>
 				<Route path="/user/userProfile">
 					<Profile />
+				</Route>
+				<Route path="/signup">
+					<Signup />
 				</Route>
 			</Switch>
 		</Router>
