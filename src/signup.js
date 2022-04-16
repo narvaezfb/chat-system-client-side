@@ -12,10 +12,12 @@ const Signup = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [passwordConfirm, setPasswordConfirm] = useState("");
-	const [message, setMessage] = useState("");
+	const [errorMessages, setErrorMessages] = useState([]);
+
 	const history = useHistory();
 
 	const signup = () => {
+		setErrorMessages([]);
 		const data = {
 			name: name,
 			email: email,
@@ -23,12 +25,28 @@ const Signup = () => {
 			passwordConfirm: passwordConfirm,
 		};
 		Axios.post("http://localhost:3001/signup", data).then((response) => {
-			console.log(response.data.status);
-			if (response.data.status) {
+			if (response.data.status === "success") {
 				localStorage.setItem("token", "Bearer " + response.data.token);
-				return history.push("/login");
+				return history.push({
+					pathname: "/login",
+					state: { message: "account created successfully, now please login" },
+				});
 			} else {
-				setMessage("Invalid credentials");
+				let errors = [];
+				if (response.data.error.name) {
+					errors.push(response.data.error.name.message);
+				}
+				if (response.data.error.email) {
+					errors.push(response.data.error.email.message);
+				}
+				if (response.data.error.password) {
+					errors.push(response.data.error.password.message);
+				}
+				if (response.data.error.passwordConfirm) {
+					errors.push(response.data.error.passwordConfirm.message);
+				}
+
+				return setErrorMessages(errors);
 			}
 		});
 	};
@@ -106,18 +124,35 @@ const Signup = () => {
 						alignItems: "center",
 						marginTop: 2,
 					}}
-				>
-					{/* <Typography color="#FF0000"> {message}</Typography> */}
-				</Box>
+				></Box>
 				<Box
 					sx={{
 						display: "flex",
 						justifyContent: "center",
+						pt: 1,
 					}}
 				>
 					<Typography>
 						Already a member? <Link href="/login"> Log In</Link>
 					</Typography>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						marginTop: 2,
+					}}
+				>
+					{errorMessages.map((messages, index) => {
+						return (
+							<Typography color="#FF0000" key={index}>
+								{" "}
+								{messages}
+							</Typography>
+						);
+					})}
 				</Box>
 			</Box>
 		</Box>

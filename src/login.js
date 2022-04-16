@@ -3,7 +3,7 @@ import Axios from "axios";
 import Box from "@mui/material/Box";
 import { TextField, Typography } from "@mui/material";
 import { Button } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 const Login = () => {
@@ -12,7 +12,13 @@ const Login = () => {
 	const [message, setMessage] = useState("");
 	// eslint-disable-next-line no-unused-vars
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [registrationMessage, setRegistrationMessage] = useState("");
+
+	//history
+	const location = useLocation();
 	const history = useHistory();
+
+	//enable axios credentials
 	Axios.defaults.withCredentials = true;
 
 	var url =
@@ -33,6 +39,8 @@ const Login = () => {
 			.catch(() => {
 				return history.push("/");
 			});
+
+		console.log(location.state);
 	}, [message]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const login = async () => {
@@ -122,6 +130,7 @@ const Login = () => {
 					}}
 				>
 					<Typography color="#FF0000"> {message}</Typography>
+					<Typography> {location.state?.message}</Typography>
 				</Box>
 			</Box>
 		</Box>
