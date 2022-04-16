@@ -16,6 +16,11 @@ const Signup = () => {
 
 	const history = useHistory();
 
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
+
 	const signup = () => {
 		setErrorMessages([]);
 		const data = {
@@ -24,7 +29,7 @@ const Signup = () => {
 			password: password,
 			passwordConfirm: passwordConfirm,
 		};
-		Axios.post("http://localhost:3001/signup", data).then((response) => {
+		Axios.post(`${url}/signup`, data).then((response) => {
 			if (response.data.status === "success") {
 				localStorage.setItem("token", "Bearer " + response.data.token);
 				return history.push({
