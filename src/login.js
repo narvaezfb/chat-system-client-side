@@ -12,7 +12,6 @@ const Login = () => {
 	const [message, setMessage] = useState("");
 	// eslint-disable-next-line no-unused-vars
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [registrationMessage, setRegistrationMessage] = useState("");
 
 	//history
 	const location = useLocation();
