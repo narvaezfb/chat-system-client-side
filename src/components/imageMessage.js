@@ -16,6 +16,12 @@ function ImageMesssage({
 	handleDeleteMessage,
 	id,
 }) {
+	var socket;
+	if (process.env.NODE_ENV === "development") {
+		socket = io.connect(process.env.REACT_APP_LOCALHOST_URL);
+	} else {
+		socket = io.connect(process.env.REACT_APP_BACK_END_URL);
+	}
 	if (userID === fromUser) {
 		return (
 			<Box>
@@ -24,7 +30,7 @@ function ImageMesssage({
 						<CardMedia
 							component="img"
 							height="250"
-							image={`http://localhost:3001/imageMessages/${image}`}
+							image={`${url}/imageMessages/${image}`}
 						/>
 						<CardActions sx={{ justifyContent: "flex-end" }}>
 							<Typography sx={{ fontSize: 12 }}>{time}</Typography>
@@ -41,7 +47,7 @@ function ImageMesssage({
 					<CardMedia
 						component="img"
 						height="250"
-						image={`http://localhost:3001/imageMessages/${image}`}
+						image={`${url}/imageMessages/${image}`}
 					/>
 					<CardActions sx={{ justifyContent: "flex-end" }}>
 						<Typography sx={{ fontSize: 12 }}>{time}</Typography>

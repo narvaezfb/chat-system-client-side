@@ -10,6 +10,14 @@ export default function SettingsMenu() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const history = useHistory();
 	const open = Boolean(anchorEl);
+
+	var socket;
+	if (process.env.NODE_ENV === "development") {
+		socket = io.connect(process.env.REACT_APP_LOCALHOST_URL);
+	} else {
+		socket = io.connect(process.env.REACT_APP_BACK_END_URL);
+	}
+
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -22,7 +30,7 @@ export default function SettingsMenu() {
 	};
 
 	const logout = () => {
-		Axios.get("http://localhost:3001/logout").then((response) => {
+		Axios.get(`${url}/logout`).then((response) => {
 			console.log(response);
 			return history.push("/");
 		});
