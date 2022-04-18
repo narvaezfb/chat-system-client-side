@@ -30,7 +30,7 @@ export default function SettingsMenu() {
 	const logout = () => {
 		Axios.get(`${url}/logout`).then((response) => {
 			console.log(response);
-			return history.push("/");
+			if (response.data.status === "success") return history.push("/");
 		});
 	};
 
