@@ -13,6 +13,9 @@ export default function SettingsMenu() {
 	const cookies = new Cookies();
 	const open = Boolean(anchorEl);
 
+	//enable axios credentials
+	Axios.defaults.withCredentials = true;
+
 	var url =
 		process.env.NODE_ENV === "development"
 			? process.env.REACT_APP_LOCALHOST_URL
@@ -30,11 +33,14 @@ export default function SettingsMenu() {
 	};
 
 	const logout = () => {
-		Axios.get(`${url}/logout`).then((response) => {
-			console.log(response);
-			cookies.remove("userId");
-			localStorage.removeItem("token");
-			if (response.data.status === "success") return history.push("/");
+		Axios.get(`${url}/logout`, {
+			headers: { Authorization: localStorage.getItem("token") },
+		}).then((response) => {
+			if (response.data.status === "success") {
+				cookies.remove("userId");
+				localStorage.removeItem("token");
+				return history.push("/");
+			}
 		});
 	};
 
