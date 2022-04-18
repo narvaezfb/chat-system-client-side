@@ -5,10 +5,12 @@ import MenuItem from "@mui/material/MenuItem";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
+import Cookies from "universal-cookie";
 
 export default function SettingsMenu() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const history = useHistory();
+	const cookies = new Cookies();
 	const open = Boolean(anchorEl);
 
 	var url =
@@ -30,6 +32,8 @@ export default function SettingsMenu() {
 	const logout = () => {
 		Axios.get(`${url}/logout`).then((response) => {
 			console.log(response);
+			cookies.remove("userId");
+			localStorage.removeItem("token");
 			if (response.data.status === "success") return history.push("/");
 		});
 	};
