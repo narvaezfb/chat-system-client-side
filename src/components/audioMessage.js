@@ -12,12 +12,10 @@ function AudioMessage({
 	handleDeleteMessage,
 	id,
 }) {
-	var socket;
-	if (process.env.NODE_ENV === "development") {
-		socket = io.connect(process.env.REACT_APP_LOCALHOST_URL);
-	} else {
-		socket = io.connect(process.env.REACT_APP_BACK_END_URL);
-	}
+	var url =
+		process.env.NODE_ENV === "development"
+			? process.env.REACT_APP_LOCALHOST_URL
+			: process.env.REACT_APP_BACK_END_URL;
 	if (userID === fromUser) {
 		return (
 			<div className="message-blue-audio">
