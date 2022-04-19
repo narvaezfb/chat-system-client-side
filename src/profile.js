@@ -14,9 +14,11 @@ import PersonIcon from "@mui/icons-material/Person";
 const Profile = () => {
 	const history = useHistory();
 
+	// eslint-disable-next-line no-unused-vars
 	const [userId, setUserId] = useState("");
-
+	// eslint-disable-next-line no-unused-vars
 	const [name, setName] = useState("");
+	// eslint-disable-next-line no-unused-vars
 	const [email, setEmail] = useState("");
 
 	var url =
@@ -52,10 +54,12 @@ const Profile = () => {
 		}
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	const cancelForm = () => {
 		return history.push("/chat");
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	const submitForm = (event) => {
 		event.preventDefault();
 
