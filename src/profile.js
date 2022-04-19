@@ -94,7 +94,7 @@ const Profile = () => {
 									mb: 2,
 								}}
 							>
-								<img src={blankUserPhoto} width="250px"></img>
+								<img src={blankUserPhoto} alt="user photo" width="250px"></img>
 							</Box>
 							<Box sx={{ mb: 2 }}>
 								<Typography> User Name</Typography>
