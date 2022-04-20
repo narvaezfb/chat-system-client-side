@@ -97,7 +97,7 @@ const Profile = () => {
 								<img src={blankUserPhoto} alt="user" width="250px"></img>
 							</Box>
 							<Box sx={{ mb: 2 }}>
-								<Typography> User Name</Typography>
+								<Typography sx={{ fontWeight: "bold" }}> User Name</Typography>
 							</Box>
 
 							<Typography>
@@ -120,7 +120,7 @@ const Profile = () => {
 									p: 1,
 								}}
 							>
-								<Typography> Status: </Typography>
+								<Typography sx={{ fontWeight: "bold" }}> Status: </Typography>
 								<Button color="success" sx={{ border: 1 }}>
 									Active
 								</Button>
@@ -147,7 +147,7 @@ const Profile = () => {
 								}}
 							>
 								<PersonIcon />
-								<Typography>About</Typography>
+								<Typography sx={{ fontWeight: "bold" }}>Information</Typography>
 							</Box>
 							<Box sx={{ display: "flex", flexDirection: "row", mb: 3 }}>
 								<Box
@@ -161,10 +161,14 @@ const Profile = () => {
 										pr: 2,
 									}}
 								>
-									<Typography>First Name</Typography>
-									<Typography>Gender </Typography>
-									<Typography>Country</Typography>
-									<Typography>Email Address</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>
+										First Name
+									</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Gender </Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Country</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>
+										Email Address
+									</Typography>
 								</Box>
 								<Box
 									sx={{
@@ -193,10 +197,95 @@ const Profile = () => {
 										pr: 2,
 									}}
 								>
-									<Typography>Last Name</Typography>
-									<Typography>Contact No. </Typography>
-									<Typography>Address</Typography>
-									<Typography>Birthday</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Last Name</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>
+										Contact No.{" "}
+									</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Address</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Birthday</Typography>
+								</Box>
+								<Box
+									sx={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-between",
+										gap: 1,
+										mt: 3,
+										pl: 2,
+										pr: 2,
+									}}
+								>
+									<Typography>Narvaez</Typography>
+									<Typography>+1 647 563 5190 </Typography>
+									<Typography>773 Oshawa blvd N</Typography>
+									<Typography>May 4, 1999</Typography>
+								</Box>
+							</Box>
+						</Paper>
+						<Paper
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+
+								pt: 1,
+								m: 1,
+								mt: 5,
+							}}
+						>
+							<Box sx={{ display: "flex", flexDirection: "row", mb: 3 }}>
+								<Box
+									sx={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-between",
+										gap: 1,
+										mt: 3,
+										pl: 2,
+										pr: 2,
+									}}
+								>
+									<Typography sx={{ fontWeight: "bold" }}>
+										First Name
+									</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Gender </Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Country</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>
+										Email Address
+									</Typography>
+								</Box>
+								<Box
+									sx={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-between",
+										gap: 1,
+										mt: 3,
+										pl: 2,
+										pr: 2,
+									}}
+								>
+									<Typography>Fabian</Typography>
+									<Typography>Male </Typography>
+									<Typography>Canada</Typography>
+									<Typography>narvaezfb4@hotmail.com</Typography>
+								</Box>
+								<Box
+									sx={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-between",
+										gap: 1,
+										mt: 3,
+										pl: 2,
+										pr: 2,
+									}}
+								>
+									<Typography sx={{ fontWeight: "bold" }}>Last Name</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>
+										Contact No.{" "}
+									</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Address</Typography>
+									<Typography sx={{ fontWeight: "bold" }}>Birthday</Typography>
 								</Box>
 								<Box
 									sx={{
