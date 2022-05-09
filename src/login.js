@@ -106,7 +106,7 @@ const Login = () => {
 				backgroundImage: `url(${BackgroundImage})`,
 				backgroundPosition: "center",
 				backgroundSize: "cover",
-				height: "98vh",
+				height: "100vh",
 			}}
 		>
 			<Paper
