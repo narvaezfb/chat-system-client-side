@@ -63,6 +63,7 @@ export default function SearchAppBar() {
 						color="inherit"
 						aria-label="open drawer"
 						sx={{ mr: 2 }}
+						href="./chat"
 					>
 						<ChatIcon />
 					</IconButton>
