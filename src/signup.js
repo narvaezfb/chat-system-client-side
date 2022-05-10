@@ -5,8 +5,10 @@ import { TextField, Typography } from "@mui/material";
 import { Button, Paper } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import Link from "@mui/material/Link";
-import BackgroundImage from "./media/green-brick-2.jpeg";
 import validator from "validator";
+import logo from "./media/logo-v1.png";
+import { ThemeProvider } from "@mui/material";
+import { Theme } from "./themes/theme";
 
 const Signup = () => {
 	//state variables for each state
@@ -133,132 +135,159 @@ const Signup = () => {
 	};
 
 	return (
-		<Box
-			sx={{
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				backgroundImage: `url(${BackgroundImage})`,
-				backgroundPosition: "center",
-				backgroundSize: "cover",
-				height: "100vh",
-			}}
-		>
-			<Paper
-				elevation={3}
+		<ThemeProvider theme={Theme}>
+			<Box
 				sx={{
 					display: "flex",
-					flexDirection: "column",
 					justifyContent: "center",
-					marginTop: 20,
-					width: "350px",
-					padding: 6,
-					border: 2,
-					borderBlockColor: "#1b5e20",
-					margin: 2,
+					alignItems: "center",
+					backgroundColor: "primary.main",
+					height: "100vh",
 				}}
 			>
-				<Typography variant="h4" align="center">
-					Registration
-				</Typography>
-				<TextField
-					inputRef={nameRef}
-					required
-					id="outlined-required"
-					label="name"
-					value={name}
-					sx={{ marginTop: 1 }}
-					onChange={(event) => {
-						setName(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<TextField
-					inputRef={emailRef}
-					required
-					id="outlined-required"
-					label="email"
-					sx={{ marginTop: 1 }}
-					value={email}
-					onChange={(event) => {
-						setEmail(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<TextField
-					inputRef={passwordRef}
-					required
-					id="outlined-required"
-					label="password"
-					type={"password"}
-					sx={{ marginTop: 1 }}
-					value={password}
-					onChange={(event) => {
-						setPassword(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<TextField
-					inputRef={passwordConfirmRef}
-					required
-					id="outlined-required"
-					label="confirm password"
-					type={"password"}
-					sx={{ marginTop: 1 }}
-					value={passwordConfirm}
-					onChange={(event) => {
-						setPasswordConfirm(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<Button
-					variant="contained"
-					color="success"
-					sx={{ marginTop: 1 }}
-					onClick={signup}
-					onKeyPress={handleEnterKeyPress}
-				>
-					Create your account
-				</Button>
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						marginTop: 2,
-					}}
-				></Box>
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "center",
-						pt: 1,
-					}}
-				>
-					<Typography>
-						Already a member? <Link href="/login"> Log In</Link>
-					</Typography>
-				</Box>
-				<Box
+				<Paper
+					elevation={3}
 					sx={{
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
-						alignItems: "center",
-						marginTop: 2,
+						width: "350px",
+						padding: 6,
+						border: 2,
+						borderColor: "secondary.main",
+						backgroundColor: "primary.main",
+						margin: 2,
 					}}
 				>
-					{errorMessages.map((messages, index) => {
-						return (
-							<Typography color="#FF0000" key={index}>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							mb: 1,
+							mt: -3,
+						}}
+					>
+						<img
+							src={logo}
+							width="100px"
+							height="100px"
+							position="center"
+							alt="logo"
+						/>
+					</Box>
+					<TextField
+						inputRef={nameRef}
+						required
+						id="outlined-required"
+						label="name"
+						value={name}
+						focused
+						color="secondary"
+						sx={{ pt: 1, pb: 2 }}
+						InputProps={{ style: { color: "#e0f7fa" } }}
+						onChange={(event) => {
+							setName(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<TextField
+						inputRef={emailRef}
+						required
+						id="outlined-required"
+						label="email"
+						value={email}
+						focused
+						color="secondary"
+						sx={{ pt: 1, pb: 2 }}
+						InputProps={{ style: { color: "#e0f7fa" } }}
+						onChange={(event) => {
+							setEmail(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<TextField
+						inputRef={passwordRef}
+						required
+						id="outlined-required"
+						label="password"
+						type={"password"}
+						value={password}
+						focused
+						color="secondary"
+						sx={{ pt: 1, pb: 2 }}
+						InputProps={{ style: { color: "#e0f7fa" } }}
+						onChange={(event) => {
+							setPassword(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<TextField
+						inputRef={passwordConfirmRef}
+						required
+						id="outlined-required"
+						label="confirm password"
+						type={"password"}
+						value={passwordConfirm}
+						focused
+						color="secondary"
+						InputProps={{ style: { color: "#e0f7fa" } }}
+						onChange={(event) => {
+							setPasswordConfirm(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<Button
+						variant="contained"
+						sx={{ backgroundColor: "green.main", mt: 1 }}
+						onClick={signup}
+						onKeyPress={handleEnterKeyPress}
+					>
+						Create your account
+					</Button>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 2,
+						}}
+					></Box>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							pt: 1,
+						}}
+					>
+						<Typography color="primary.light">
+							Already a member?{" "}
+							<Link href="/login" color="green.main">
 								{" "}
-								{messages}
-							</Typography>
-						);
-					})}
-				</Box>
-			</Paper>
-		</Box>
+								Log In
+							</Link>
+						</Typography>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 2,
+						}}
+					>
+						{errorMessages.map((messages, index) => {
+							return (
+								<Typography color="#FF0000" key={index}>
+									{" "}
+									{messages}
+								</Typography>
+							);
+						})}
+					</Box>
+				</Paper>
+			</Box>
+		</ThemeProvider>
 	);
 };
 
