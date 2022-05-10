@@ -306,7 +306,7 @@ function Chat() {
 			<Box
 				sx={{
 					display: "flex",
-					height: "90vh",
+					height: "87vh",
 					width: "99vw",
 					backgroundColor: "primary.main",
 				}}
@@ -341,7 +341,7 @@ function Chat() {
 							flexGrow: 1,
 						}}
 					>
-						<Scrollbars style={{ height: 700 }}>
+						<Scrollbars style={{}}>
 							{chatHistory?.map((message, index) => {
 								if (message.messageFormat === "text") {
 									return (
