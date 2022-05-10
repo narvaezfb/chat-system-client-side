@@ -5,9 +5,21 @@ import { TextField, Typography, Paper, Divider } from "@mui/material";
 import { Button } from "@mui/material";
 import { useHistory, useLocation } from "react-router-dom";
 import Link from "@mui/material/Link";
-import BackgroundImage from "./media/green-brick-2.jpeg";
-
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { ThemeProvider } from "@mui/material";
+import { Theme } from "./themes/theme";
+import logo from "./media/logo-v1.png";
 const Login = () => {
+	const [values, setValues] = React.useState({
+		amount: "",
+		password: "",
+		weight: "",
+		weightRange: "",
+		showPassword: false,
+	});
 	//state variables
 	const [userEmail, setUserEmail] = useState("");
 	const [userPassword, setUserPassword] = useState("");
@@ -97,104 +109,155 @@ const Login = () => {
 		}
 	};
 
+	const handleClickShowPassword = () => {
+		setValues({
+			...values,
+			showPassword: !values.showPassword,
+		});
+	};
+
+	const handleMouseDownPassword = (event) => {
+		event.preventDefault();
+	};
+
 	return (
-		<Box
-			sx={{
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				backgroundImage: `url(${BackgroundImage})`,
-				backgroundPosition: "center",
-				backgroundSize: "cover",
-				height: "100vh",
-			}}
-		>
-			<Paper
-				elevation={3}
+		<ThemeProvider theme={Theme}>
+			<Box
 				sx={{
 					display: "flex",
-					flexDirection: "column",
 					justifyContent: "center",
-					width: "350px",
-					padding: 6,
-					border: 2,
-					borderBlockColor: "#1b5e20",
-					margin: 2,
+					alignItems: "center",
+					backgroundColor: "primary.main",
+					height: "100vh",
 				}}
 			>
-				<TextField
-					inputRef={emailRef}
-					required
-					id="outlined-required"
-					label="email"
-					sx={{ marginTop: 1 }}
-					onChange={(event) => {
-						setUserEmail(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<TextField
-					inputRef={passwordRef}
-					required
-					id="outlined-required"
-					label="password"
-					type={"password"}
-					sx={{ marginTop: 1 }}
-					onChange={(event) => {
-						setUserPassword(event.target.value);
-						clearErrors();
-					}}
-				/>
-				<Button
-					variant="contained"
-					sx={{ marginTop: 1, mb: 3, backgroundColor: "#1b5e20" }}
-					onClick={login}
-					onKeyPress={handleEnterKeyPress}
-				>
-					Log In
-				</Button>
-				<Divider variant="middle" />
 				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "center",
-						mt: 1,
-					}}
-				>
-					<Typography>
-						Don't have an account? <Link href="/signup"> Register</Link>
-					</Typography>
-				</Box>
-				<Box
+					// elevation={3}
 					sx={{
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
-						alignItems: "center",
-						marginTop: 2,
+						width: "350px",
+						padding: 6,
+						border: 2,
+						borderColor: "secondary.main",
+						backgroundColor: "primary.main",
+						margin: 2,
 					}}
 				>
-					{errorMessage.map((messages, index) => {
-						return (
-							<Typography color="#f44336" key={index}>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+						}}
+					>
+						<img
+							src={logo}
+							width="100px"
+							height="100px"
+							position="center"
+							alt="logo"
+						/>
+					</Box>
+
+					<TextField
+						inputRef={emailRef}
+						required
+						label="email"
+						margin="normal"
+						color="secondary"
+						focused
+						InputProps={{ style: { color: "#e0f7fa" } }}
+						onChange={(event) => {
+							setUserEmail(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<TextField
+						inputRef={passwordRef}
+						required
+						id="outlined-required"
+						label="password"
+						type={"password"}
+						color="secondary"
+						focused
+						InputProps={{
+							style: { color: "#e0f7fa" },
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton
+										aria-label="toggle password visibility"
+										onClick={handleClickShowPassword}
+										onMouseDown={handleMouseDownPassword}
+										edge="end"
+										sx={{ color: "primary.light" }}
+									>
+										{values.showPassword ? <VisibilityOff /> : <Visibility />}
+									</IconButton>
+								</InputAdornment>
+							),
+						}}
+						sx={{ marginTop: 1 }}
+						onChange={(event) => {
+							setUserPassword(event.target.value);
+							clearErrors();
+						}}
+					/>
+					<Button
+						variant="contained"
+						sx={{ marginTop: 1, mb: 3, backgroundColor: "green.main" }}
+						onClick={login}
+						onKeyPress={handleEnterKeyPress}
+					>
+						Log In
+					</Button>
+					<Divider variant="middle" color="#0d47a1" />
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							mt: 1,
+						}}
+					>
+						<Typography color="primary.light">
+							Don't have an account?{" "}
+							<Link href="/signup" color={"#1DB954"}>
 								{" "}
-								{messages}
-							</Typography>
-						);
-					})}
+								Register
+							</Link>
+						</Typography>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 2,
+						}}
+					>
+						{errorMessage.map((messages, index) => {
+							return (
+								<Typography color="#f44336" key={index}>
+									{" "}
+									{messages}
+								</Typography>
+							);
+						})}
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 2,
+						}}
+					>
+						<Typography> {location.state?.message}</Typography>
+					</Box>
 				</Box>
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						marginTop: 2,
-					}}
-				>
-					<Typography> {location.state?.message}</Typography>
-				</Box>
-			</Paper>
-		</Box>
+			</Box>
+		</ThemeProvider>
 	);
 };
 
