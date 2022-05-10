@@ -1,13 +1,14 @@
 import React from "react";
 import Header from "./header";
-import Box from "@mui/material/Box";
+import { ThemeProvider } from "@mui/material";
+import { Theme } from "./../themes/theme";
 
 const Layout = ({ children }) => {
 	return (
-		<Box>
+		<ThemeProvider theme={Theme}>
 			<Header />
 			{children}
-		</Box>
+		</ThemeProvider>
 	);
 };
 
