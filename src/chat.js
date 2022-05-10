@@ -306,90 +306,101 @@ function Chat() {
 			<Box
 				sx={{
 					display: "flex",
-					flexDirection: "row",
-					flexGrow: 1,
+					height: "90vh",
+					width: "99vw",
+					backgroundColor: "primary.main",
 				}}
 			>
 				<Box
 					sx={{
 						width: 300,
 						border: 1,
-						display: "flex",
-						flexDirection: "column",
+						borderColor: "secondary.main",
 					}}
 				>
 					<ListChats chats={chats} openChat={getCurrentChat} userId={userId} />
 				</Box>
 				<Box
 					sx={{
+						display: "flex",
+						flexWrap: "wrap",
 						flexDirection: "column",
 						flexGrow: 1,
+						border: 1,
+						borderColor: "secondary.main",
 					}}
 				>
 					<ChatContainerHeader userName={currentUserChat} />
-					<Box sx={{ height: 550 }}>
-						<Box sx={{ border: 1, m: 1, height: 545, pt: 1 }}>
-							<Scrollbars style={{ height: 500 }}>
-								{chatHistory?.map((message, index) => {
-									if (message.messageFormat === "text") {
-										return (
-											<Message
-												message={message.message}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												text={message.message}
-												handleEditMessage={handleEditMessage}
-												handleDeleteMessage={handleDeleteMessage}
-												handleTextToSpeech={() =>
-													speak({ text: message.message })
-												}
-												handleEditedMessage={handleEditedMessage}
-												editedMessage={editedMessage}
-											/>
-										);
-									}
-									if (message.messageFormat === "audio") {
-										// if (message.audio.filename && message.audio.filename !== "")
-										return (
-											<AudioMessage
-												audio={message.filename}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												handleDeleteMessage={handleDeleteMessage}
-											/>
-										);
-									}
 
-									if (message.messageFormat === "image") {
-										// if (message.audio.filename && message.audio.filename !== "")
-										return (
-											<ImageMessage
-												image={message.filename}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												handleDeleteMessage={handleDeleteMessage}
-											/>
-										);
-									}
-									return <h1>message</h1>;
-								})}
-							</Scrollbars>
-						</Box>
+					<Box
+						sx={{
+							border: 1,
+							borderColor: "secondary.main",
+							m: 1,
+							pt: 1,
+							flexGrow: 1,
+						}}
+					>
+						<Scrollbars style={{ height: 700 }}>
+							{chatHistory?.map((message, index) => {
+								if (message.messageFormat === "text") {
+									return (
+										<Message
+											message={message.message}
+											time={convertDateFormat(message.createdAt)}
+											userID={userId}
+											fromUser={message.fromUser}
+											key={index}
+											id={message._id}
+											text={message.message}
+											handleEditMessage={handleEditMessage}
+											handleDeleteMessage={handleDeleteMessage}
+											handleTextToSpeech={() =>
+												speak({ text: message.message })
+											}
+											handleEditedMessage={handleEditedMessage}
+											editedMessage={editedMessage}
+										/>
+									);
+								}
+								if (message.messageFormat === "audio") {
+									// if (message.audio.filename && message.audio.filename !== "")
+									return (
+										<AudioMessage
+											audio={message.filename}
+											time={convertDateFormat(message.createdAt)}
+											userID={userId}
+											fromUser={message.fromUser}
+											key={index}
+											id={message._id}
+											handleDeleteMessage={handleDeleteMessage}
+										/>
+									);
+								}
+
+								if (message.messageFormat === "image") {
+									// if (message.audio.filename && message.audio.filename !== "")
+									return (
+										<ImageMessage
+											image={message.filename}
+											time={convertDateFormat(message.createdAt)}
+											userID={userId}
+											fromUser={message.fromUser}
+											key={index}
+											id={message._id}
+											handleDeleteMessage={handleDeleteMessage}
+										/>
+									);
+								}
+								return <h1>message</h1>;
+							})}
+						</Scrollbars>
 					</Box>
+
 					<Box
 						sx={{
 							display: "flex",
 							m: 1,
-							mt: 2,
 							gap: 1,
 						}}
 					>
@@ -397,6 +408,9 @@ function Chat() {
 							fullWidth
 							label="Enter a message.."
 							id="fullWidth"
+							color="secondary"
+							focused
+							InputProps={{ style: { color: "#e0f7fa" } }}
 							value={currentMessage}
 							onChange={(event) => {
 								setCurrentMessage(event.target.value);
@@ -406,9 +420,7 @@ function Chat() {
 						<Box
 							sx={{
 								display: "flex",
-
 								gap: 1,
-								// borderColor: "primary",
 							}}
 						>
 							<label htmlFor="upload-photo">
@@ -420,20 +432,15 @@ function Chat() {
 									onChange={onFileChnage}
 									onClick={changeStatus}
 								/>
-								<Fab
-									color="primary"
-									// size="small"
-									component="span"
-									// aria-label="add"
-								>
+								<Fab color="secondary" component="span">
 									<InsertPhotoIcon />
 								</Fab>
 							</label>
 							<Button
-								sx={{ borderRadius: 1, border: 1 }}
+								sx={{ borderRadius: 1, border: 1, borderColor: "green.main" }}
 								onClick={startRecording}
 							>
-								<MicIcon />
+								<MicIcon color="green" />
 							</Button>
 							{isRecording === true ? (
 								<Button
@@ -447,8 +454,8 @@ function Chat() {
 						{isText === true ? (
 							<Button
 								variant="contained"
-								color="success"
-								sx={{ pl: 3, pr: 3 }}
+								color="green"
+								sx={{ pl: 3, pr: 3, color: "#fff" }}
 								onClick={sendMessage}
 							>
 								Send
@@ -456,11 +463,11 @@ function Chat() {
 						) : (
 							<Button
 								variant="contained"
-								color="success"
+								color="green"
 								sx={{ pl: 3, pr: 3 }}
 								onClick={sendImage}
 							>
-								<SendIcon />
+								<SendIcon color="primary.light" />
 							</Button>
 						)}
 					</Box>

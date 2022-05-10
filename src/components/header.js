@@ -6,9 +6,11 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
-import ChatIcon from "@mui/icons-material/Chat";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsMenu from "./settings";
+import { ThemeProvider } from "@mui/material";
+import { Theme } from "./../themes/theme";
+import Logo from "./../media/logo-v1.png";
 
 const Search = styled("div")(({ theme }) => ({
 	position: "relative",
@@ -54,39 +56,50 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function SearchAppBar() {
 	return (
-		<Box sx={{ flexGrow: 1 }}>
-			<AppBar position="static">
-				<Toolbar>
-					<IconButton
-						size="large"
-						edge="start"
-						color="inherit"
-						aria-label="open drawer"
-						sx={{ mr: 2 }}
-						href="./chat"
-					>
-						<ChatIcon />
-					</IconButton>
-					<Typography
-						variant="h6"
-						noWrap
-						component="div"
-						sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-					>
-						Chats
-					</Typography>
-					<Search>
-						<SearchIconWrapper>
-							<SearchIcon />
-						</SearchIconWrapper>
-						<StyledInputBase
-							placeholder="Search…"
-							inputProps={{ "aria-label": "search" }}
-						/>
-					</Search>
-					<SettingsMenu />
-				</Toolbar>
-			</AppBar>
-		</Box>
+		<ThemeProvider theme={Theme}>
+			<Box sx={{ flexGrow: 1, border: 3, borderColor: "secondary.main" }}>
+				<AppBar position="static">
+					<Toolbar>
+						<IconButton
+							size="large"
+							edge="start"
+							aria-label="open drawer"
+							sx={{ mr: 2 }}
+							href="./chat"
+						>
+							<img
+								src={Logo}
+								width="50px"
+								height="50px"
+								position="center"
+								alt="logo"
+							/>
+						</IconButton>
+						<Typography
+							variant="h6"
+							noWrap
+							component="div"
+							color="green.main"
+							sx={{
+								flexGrow: 1,
+								display: { xs: "none", sm: "block" },
+							}}
+						>
+							Live Chat
+						</Typography>
+						<Search>
+							<SearchIconWrapper>
+								<SearchIcon />
+							</SearchIconWrapper>
+							<StyledInputBase
+								placeholder="Search…"
+								inputProps={{ "aria-label": "search" }}
+							/>
+						</Search>
+						<SettingsMenu />
+					</Toolbar>
+				</AppBar>
+			</Box>
+		</ThemeProvider>
 	);
 }

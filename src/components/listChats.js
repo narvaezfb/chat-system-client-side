@@ -26,15 +26,18 @@ export default function AllItems({ openChat, chats, userId, updateChat }) {
 		<List>
 			<ListItem button>
 				<ListItemIcon>
-					<ChatBubbleIcon />
+					<ChatBubbleIcon color="green" />
 				</ListItemIcon>
-				<ListItemText primary="Current Chats" />
-				<Button sx={{ border: 1, color: "#212121" }} onClick={handleClickOpen}>
-					<AddIcon />
+				<ListItemText primary="Current Chats" style={{ color: "#e3f2fd" }} />
+				<Button
+					sx={{ border: 1, color: "green.main" }}
+					onClick={handleClickOpen}
+				>
+					<AddIcon color="green" />
 				</Button>
 				<CreateChat open={open} handleClose={handleClose} userID1={userId} />
 			</ListItem>
-			<Divider />
+			<Divider color="secondary" />
 			<List>
 				{chats?.map((chat) => {
 					return (
@@ -45,13 +48,14 @@ export default function AllItems({ openChat, chats, userId, updateChat }) {
 							id={chat._id}
 							onChange={updateChat}
 						>
-							<PersonIcon sx={{ mr: 2 }} />
+							<PersonIcon sx={{ mr: 2 }} color="green" />
 							<ListItemText
 								primary={
 									chat.userID2._id === userId
 										? chat.userID1.name
 										: chat.userID2.name
 								}
+								style={{ color: "#e3f2fd" }}
 							/>
 						</ListItem>
 					);

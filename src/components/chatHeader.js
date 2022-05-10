@@ -12,13 +12,14 @@ const ChatContainer = ({ userName }) => {
 				p: 1,
 				m: 1,
 				border: 1,
+				borderColor: "secondary.main",
 			}}
 		>
 			<Box>
-				<PersonIcon />
+				<PersonIcon color="green" />
 			</Box>
 			<Box sx={{ ml: 2 }}>
-				<Typography>{userName}</Typography>
+				<Typography color={"primary.light"}>{userName}</Typography>
 			</Box>
 		</Box>
 	);
