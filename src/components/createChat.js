@@ -7,13 +7,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import UsersList from "./usersList";
 import Typography from "@mui/material/Typography";
 import Axios from "axios";
-import { useHistory } from "react-router-dom";
 
 export default function CreateChat({ open, handleClose, userID1 }) {
 	const [contacts, setContacts] = React.useState([]);
 	const [personName, setPersonName] = React.useState("");
 	const [contactId, setContactId] = React.useState("");
-	const history = useHistory();
 	Axios.defaults.withCredentials = true;
 
 	var url =
@@ -51,14 +49,14 @@ export default function CreateChat({ open, handleClose, userID1 }) {
 				headers: { Authorization: localStorage.getItem("token") },
 			}).then((response) => {
 				handleClose();
-				return history.push("/chat");
+				window.location.reload();
 			});
 		}
 	};
 
 	return (
 		<div>
-			<Dialog open={open} onClose={handleClose} sx={{}}>
+			<Dialog open={open} onClose={handleClose}>
 				<DialogTitle>New Chat</DialogTitle>
 				<DialogContent dividers>
 					<Typography gutterBottom>

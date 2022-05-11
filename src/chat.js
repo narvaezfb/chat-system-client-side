@@ -20,6 +20,8 @@ import ImageMessage from "./components/imageMessage";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import Logo from "./media/logo-v1.png";
+import CreateChat from "./components/createChat";
 
 var socket;
 if (process.env.NODE_ENV === "development") {
@@ -48,6 +50,7 @@ function Chat() {
 	const [messageFormat, setMessageFormat] = useState("text");
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isText, setIstText] = useState(true);
+	const [isOpen, setIsOpen] = useState(false);
 	Axios.defaults.withCredentials = true;
 
 	var url =
@@ -206,7 +209,13 @@ function Chat() {
 								Authorization: localStorage.getItem("token"),
 							},
 						}).then((response) => {
-							setChats(response.data.data.chatRooms);
+							if (
+								response.data.status === "This user does not have any chats "
+							) {
+								console.log("this user does not have any chats");
+							} else {
+								setChats(response.data.data.chatRooms);
+							}
 						});
 				})
 				.catch(() => {
@@ -301,6 +310,10 @@ function Chat() {
 		return moment(date).format("MMMM Do YYYY, h:mm:ss a");
 	};
 
+	const handleClose = () => {
+		setIsOpen(false);
+	};
+
 	return (
 		<Layout>
 			<Box
@@ -319,158 +332,193 @@ function Chat() {
 				>
 					<ListChats chats={chats} openChat={getCurrentChat} userId={userId} />
 				</Box>
-				<Box
-					sx={{
-						display: "flex",
-						flexWrap: "wrap",
-						flexDirection: "column",
-						flexGrow: 1,
-						border: 1,
-						borderColor: "secondary.main",
-					}}
-				>
-					<ChatContainerHeader userName={currentUserChat} />
-
-					<Box
-						sx={{
-							border: 1,
-							borderColor: "secondary.main",
-							m: 1,
-							pt: 1,
-							flexGrow: 1,
-						}}
-					>
-						<Scrollbars style={{}}>
-							{chatHistory?.map((message, index) => {
-								if (message.messageFormat === "text") {
-									return (
-										<Message
-											message={message.message}
-											time={convertDateFormat(message.createdAt)}
-											userID={userId}
-											fromUser={message.fromUser}
-											key={index}
-											id={message._id}
-											text={message.message}
-											handleEditMessage={handleEditMessage}
-											handleDeleteMessage={handleDeleteMessage}
-											handleTextToSpeech={() =>
-												speak({ text: message.message })
-											}
-											handleEditedMessage={handleEditedMessage}
-											editedMessage={editedMessage}
-										/>
-									);
-								}
-								if (message.messageFormat === "audio") {
-									// if (message.audio.filename && message.audio.filename !== "")
-									return (
-										<AudioMessage
-											audio={message.filename}
-											time={convertDateFormat(message.createdAt)}
-											userID={userId}
-											fromUser={message.fromUser}
-											key={index}
-											id={message._id}
-											handleDeleteMessage={handleDeleteMessage}
-										/>
-									);
-								}
-
-								if (message.messageFormat === "image") {
-									// if (message.audio.filename && message.audio.filename !== "")
-									return (
-										<ImageMessage
-											image={message.filename}
-											time={convertDateFormat(message.createdAt)}
-											userID={userId}
-											fromUser={message.fromUser}
-											key={index}
-											id={message._id}
-											handleDeleteMessage={handleDeleteMessage}
-										/>
-									);
-								}
-								return <h1>message</h1>;
-							})}
-						</Scrollbars>
-					</Box>
-
+				{chatRoom !== "" ? (
 					<Box
 						sx={{
 							display: "flex",
-							m: 1,
-							gap: 1,
+							flexWrap: "wrap",
+							flexDirection: "column",
+							flexGrow: 1,
+							border: 1,
+							borderColor: "secondary.main",
 						}}
 					>
-						<TextField
-							fullWidth
-							label="Enter a message.."
-							id="fullWidth"
-							color="secondary"
-							focused
-							InputProps={{ style: { color: "#e0f7fa" } }}
-							value={currentMessage}
-							onChange={(event) => {
-								setCurrentMessage(event.target.value);
+						<ChatContainerHeader userName={currentUserChat} />
+
+						<Box
+							sx={{
+								border: 1,
+								borderColor: "secondary.main",
+								m: 1,
+								pt: 1,
+								flexGrow: 1,
 							}}
-						/>
+						>
+							<Scrollbars style={{}}>
+								{chatHistory?.map((message, index) => {
+									if (message.messageFormat === "text") {
+										return (
+											<Message
+												message={message.message}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												text={message.message}
+												handleEditMessage={handleEditMessage}
+												handleDeleteMessage={handleDeleteMessage}
+												handleTextToSpeech={() =>
+													speak({ text: message.message })
+												}
+												handleEditedMessage={handleEditedMessage}
+												editedMessage={editedMessage}
+											/>
+										);
+									}
+									if (message.messageFormat === "audio") {
+										// if (message.audio.filename && message.audio.filename !== "")
+										return (
+											<AudioMessage
+												audio={message.filename}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												handleDeleteMessage={handleDeleteMessage}
+											/>
+										);
+									}
+
+									if (message.messageFormat === "image") {
+										// if (message.audio.filename && message.audio.filename !== "")
+										return (
+											<ImageMessage
+												image={message.filename}
+												time={convertDateFormat(message.createdAt)}
+												userID={userId}
+												fromUser={message.fromUser}
+												key={index}
+												id={message._id}
+												handleDeleteMessage={handleDeleteMessage}
+											/>
+										);
+									}
+									return <h1>message</h1>;
+								})}
+							</Scrollbars>
+						</Box>
 
 						<Box
 							sx={{
 								display: "flex",
+								m: 1,
 								gap: 1,
 							}}
 						>
-							<label htmlFor="upload-photo">
-								<input
-									style={{ display: "none" }}
-									id="upload-photo"
-									name="upload-photo"
-									type="file"
-									onChange={onFileChnage}
-									onClick={changeStatus}
-								/>
-								<Fab color="secondary" component="span">
-									<InsertPhotoIcon />
-								</Fab>
-							</label>
-							<Button
-								sx={{ borderRadius: 1, border: 1, borderColor: "green.main" }}
-								onClick={startRecording}
+							<TextField
+								fullWidth
+								label="Enter a message.."
+								id="fullWidth"
+								color="secondary"
+								focused
+								InputProps={{ style: { color: "#e0f7fa" } }}
+								value={currentMessage}
+								onChange={(event) => {
+									setCurrentMessage(event.target.value);
+								}}
+							/>
+
+							<Box
+								sx={{
+									display: "flex",
+									gap: 1,
+								}}
 							>
-								<MicIcon color="green" />
-							</Button>
-							{isRecording === true ? (
+								<label htmlFor="upload-photo">
+									<input
+										style={{ display: "none" }}
+										id="upload-photo"
+										name="upload-photo"
+										type="file"
+										onChange={onFileChnage}
+										onClick={changeStatus}
+									/>
+									<Fab color="secondary" component="span">
+										<InsertPhotoIcon />
+									</Fab>
+								</label>
 								<Button
-									sx={{ borderRadius: 1, border: 1 }}
-									onClick={stopRecording}
+									sx={{ borderRadius: 1, border: 1, borderColor: "green.main" }}
+									onClick={startRecording}
 								>
-									<StopIcon />
+									<MicIcon color="green" />
 								</Button>
-							) : null}
+								{isRecording === true ? (
+									<Button
+										sx={{ borderRadius: 1, border: 1 }}
+										onClick={stopRecording}
+									>
+										<StopIcon />
+									</Button>
+								) : null}
+							</Box>
+							{isText === true ? (
+								<Button
+									variant="contained"
+									color="green"
+									sx={{ pl: 3, pr: 3, color: "#fff" }}
+									onClick={sendMessage}
+								>
+									Send
+								</Button>
+							) : (
+								<Button
+									variant="contained"
+									color="green"
+									sx={{ pl: 3, pr: 3 }}
+									onClick={sendImage}
+								>
+									<SendIcon color="primary.light" />
+								</Button>
+							)}
 						</Box>
-						{isText === true ? (
-							<Button
-								variant="contained"
-								color="green"
-								sx={{ pl: 3, pr: 3, color: "#fff" }}
-								onClick={sendMessage}
-							>
-								Send
-							</Button>
-						) : (
-							<Button
-								variant="contained"
-								color="green"
-								sx={{ pl: 3, pr: 3 }}
-								onClick={sendImage}
-							>
-								<SendIcon color="primary.light" />
-							</Button>
-						)}
 					</Box>
-				</Box>
+				) : (
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+							flexGrow: 1,
+						}}
+					>
+						<img
+							src={Logo}
+							width="100px"
+							height="100px"
+							position="center"
+							alt="logo"
+						/>
+						<Button
+							color="green"
+							variant="outlined"
+							sx={{ mt: 2 }}
+							onClick={() => {
+								setIsOpen(true);
+							}}
+						>
+							Start new chat
+						</Button>
+						<CreateChat
+							open={isOpen}
+							handleClose={handleClose}
+							userID1={userId}
+						/>
+					</Box>
+				)}
 			</Box>
 		</Layout>
 	);
