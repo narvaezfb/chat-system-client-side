@@ -129,6 +129,7 @@ const Login = () => {
 					alignItems: "center",
 					backgroundColor: "primary.main",
 					height: "100vh",
+					m: -1,
 				}}
 			>
 				<Box
@@ -138,11 +139,11 @@ const Login = () => {
 						flexDirection: "column",
 						justifyContent: "center",
 						width: "350px",
-						padding: 6,
+						padding: 5,
 						border: 2,
 						borderColor: "secondary.main",
 						backgroundColor: "primary.main",
-						margin: 2,
+						m: 1,
 					}}
 				>
 					<Box

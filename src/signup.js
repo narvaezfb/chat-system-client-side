@@ -143,6 +143,7 @@ const Signup = () => {
 					alignItems: "center",
 					backgroundColor: "primary.main",
 					height: "100vh",
+					m: -1,
 				}}
 			>
 				<Paper
@@ -156,7 +157,7 @@ const Signup = () => {
 						border: 2,
 						borderColor: "secondary.main",
 						backgroundColor: "primary.main",
-						margin: 2,
+						margin: 1,
 					}}
 				>
 					<Box
