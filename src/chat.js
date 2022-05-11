@@ -306,9 +306,8 @@ function Chat() {
 			<Box
 				sx={{
 					display: "flex",
-					height: "87vh",
-					width: "99vw",
 					backgroundColor: "primary.main",
+					flexGrow: 1,
 				}}
 			>
 				<Box

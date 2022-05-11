@@ -1,13 +1,23 @@
 import React from "react";
 import Header from "./header";
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Box } from "@mui/material";
 import { Theme } from "./../themes/theme";
 
 const Layout = ({ children }) => {
 	return (
 		<ThemeProvider theme={Theme}>
-			<Header />
-			{children}
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					height: "100vh",
+					width: "100vw",
+					margin: -1,
+				}}
+			>
+				<Header />
+				{children}
+			</Box>
 		</ThemeProvider>
 	);
 };
