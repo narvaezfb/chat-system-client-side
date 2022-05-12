@@ -57,6 +57,27 @@ function Chat() {
 	const [seconds, setSeconds] = useState(0);
 	const [minutes, setMinutes] = useState(0);
 
+	var firstInterval = null;
+	var secondInterval = null;
+
+	const secondsIncrementer = () => {
+		setSeconds((prev) => prev + 1);
+	};
+
+	const minutesIncrementer = () => {
+		setMinutes((prev) => prev + 1);
+	};
+
+	const startCountUp = () => {
+		firstInterval = setInterval(secondsIncrementer, 1000);
+		secondInterval = setInterval(minutesIncrementer, 60000);
+	};
+
+	const stopCountUp = () => {
+		clearInterval(firstInterval);
+		clearInterval(secondInterval);
+	};
+
 	//ref variables
 	const inputChatRef = useRef();
 
@@ -94,6 +115,7 @@ function Chat() {
 		} else {
 			Mp3Recorder.start()
 				.then(() => {
+					startCountUp();
 					setIsRecording(true);
 				})
 				.catch((e) => console.error(e));
@@ -458,7 +480,6 @@ function Chat() {
 										name="upload-photo"
 										type="file"
 										onChange={onFileChange}
-										// onClick={changeStatus}
 									/>
 									<Fab color="secondary" component="span">
 										<InsertPhotoIcon />
@@ -488,7 +509,8 @@ function Chat() {
 											sx={{ pl: 3, pr: 3, color: "#fff" }}
 											onClick={sendMessage}
 										>
-											0:00
+											{minutes}:
+											{seconds < 60 ? <p>{seconds}</p> : setSeconds(0)}
 										</Button>
 										<Button
 											sx={{
@@ -496,7 +518,9 @@ function Chat() {
 												border: 1,
 												borderColor: "green.main",
 											}}
-											onClick={stopRecording}
+											onClick={() => {
+												stopRecording();
+											}}
 										>
 											<SendIcon color="green" />
 										</Button>

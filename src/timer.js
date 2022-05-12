@@ -3,21 +3,27 @@ const Timer = () => {
 	const [seconds, setSeconds] = useState(0);
 	const [minutes, setMinutes] = useState(0);
 
-	const incrementer = () => {
-		setInterval(() => {
-			setSeconds((previousSecond) => previousSecond + 1);
-		}, 1000);
-		setInterval(() => {
-			setMinutes((previousMinute) => previousMinute + 1);
-		}, 60000);
+	const secondsIncrementer = () => {
+		setSeconds((prev) => prev + 1);
+	};
+
+	const minutesIncrementer = () => {
+		setMinutes((prev) => prev + 1);
 	};
 
 	useEffect(() => {
-		incrementer();
+		let firstInterval = setInterval(secondsIncrementer, 1000);
+		let secondInterval = setInterval(minutesIncrementer, 60000);
+
+		return () => {
+			clearInterval(firstInterval);
+			clearInterval(secondInterval);
+		};
 	}, []);
 	return (
 		<div>
-			{minutes}:{seconds}
+			{minutes}
+			{seconds < 60 ? <h1>{seconds}</h1> : setSeconds(0)}
 		</div>
 	);
 };
