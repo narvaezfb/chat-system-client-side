@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Axios from "axios";
 import Layout from "./components/layout";
 import ListChats from "./components/listChats";
@@ -13,7 +13,6 @@ import { Scrollbars } from "react-custom-scrollbars-2";
 import { useSpeechSynthesis } from "react-speech-kit";
 import moment from "moment";
 import MicIcon from "@mui/icons-material/Mic";
-import StopIcon from "@mui/icons-material/Stop";
 import MicRecorder from "mic-recorder-to-mp3";
 import AudioMessage from "./components/audioMessage";
 import ImageMessage from "./components/imageMessage";
@@ -22,6 +21,7 @@ import { Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Logo from "./media/logo-v1.png";
 import CreateChat from "./components/createChat";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 var socket;
 if (process.env.NODE_ENV === "development") {
@@ -33,6 +33,7 @@ if (process.env.NODE_ENV === "development") {
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 function Chat() {
+	//state variables
 	const { speak } = useSpeechSynthesis();
 	const history = useHistory();
 	const [currentUserChat, setCurrentUserChat] = useState("");
@@ -51,6 +52,15 @@ function Chat() {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isText, setIstText] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
+
+	//timer state variables
+	const [seconds, setSeconds] = useState(0);
+	const [minutes, setMinutes] = useState(0);
+
+	//ref variables
+	const inputChatRef = useRef();
+
+	//axios with default
 	Axios.defaults.withCredentials = true;
 
 	var url =
@@ -60,6 +70,7 @@ function Chat() {
 
 	useEffect(() => {
 		isAuthenticated();
+		//
 	}, [userId, chatRoom, chatHistory, socket, chats]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const checkPermissions = () => {
@@ -144,11 +155,14 @@ function Chat() {
 		});
 	};
 
-	const changeStatus = () => {
-		setIstText(false);
-	};
-	const onFileChnage = (event) => {
-		setSelectedFile(event.target.files[0]);
+	const onFileChange = (event) => {
+		if (event.target.value.length === 0) {
+			console.log("no file has been selected");
+		} else {
+			console.log("file has been selected");
+			setSelectedFile(event.target.files[0]);
+			setIstText(false);
+		}
 	};
 
 	const sendImage = () => {
@@ -422,6 +436,7 @@ function Chat() {
 								label="Enter a message.."
 								id="fullWidth"
 								color="secondary"
+								inputRef={inputChatRef}
 								focused
 								InputProps={{ style: { color: "#e0f7fa" } }}
 								value={currentMessage}
@@ -442,8 +457,8 @@ function Chat() {
 										id="upload-photo"
 										name="upload-photo"
 										type="file"
-										onChange={onFileChnage}
-										onClick={changeStatus}
+										onChange={onFileChange}
+										// onClick={changeStatus}
 									/>
 									<Fab color="secondary" component="span">
 										<InsertPhotoIcon />
@@ -456,15 +471,39 @@ function Chat() {
 									<MicIcon color="green" />
 								</Button>
 								{isRecording === true ? (
-									<Button
-										sx={{ borderRadius: 1, border: 1 }}
-										onClick={stopRecording}
-									>
-										<StopIcon />
-									</Button>
+									<Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+										<Button
+											sx={{
+												borderRadius: 1,
+												border: 1,
+												borderColor: "red.main",
+											}}
+											onClick={stopRecording}
+										>
+											<DeleteIcon color="red" />
+										</Button>
+										<Button
+											variant="outlined"
+											color="green"
+											sx={{ pl: 3, pr: 3, color: "#fff" }}
+											onClick={sendMessage}
+										>
+											0:00
+										</Button>
+										<Button
+											sx={{
+												borderRadius: 1,
+												border: 1,
+												borderColor: "green.main",
+											}}
+											onClick={stopRecording}
+										>
+											<SendIcon color="green" />
+										</Button>
+									</Box>
 								) : null}
 							</Box>
-							{isText === true ? (
+							{isText === true && isRecording === false ? (
 								<Button
 									variant="contained"
 									color="green"
@@ -473,7 +512,8 @@ function Chat() {
 								>
 									Send
 								</Button>
-							) : (
+							) : null}
+							{isText === false && isRecording === false ? (
 								<Button
 									variant="contained"
 									color="green"
@@ -482,7 +522,7 @@ function Chat() {
 								>
 									<SendIcon color="primary.light" />
 								</Button>
-							)}
+							) : null}
 						</Box>
 					</Box>
 				) : (

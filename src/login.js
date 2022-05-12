@@ -254,7 +254,10 @@ const Login = () => {
 							marginTop: 2,
 						}}
 					>
-						<Typography> {location.state?.message}</Typography>
+						<Typography color={"primary.light"}>
+							{" "}
+							{location.state?.message}
+						</Typography>
 					</Box>
 				</Box>
 			</Box>
