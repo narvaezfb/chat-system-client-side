@@ -22,6 +22,7 @@ import SendIcon from "@mui/icons-material/Send";
 import Logo from "./media/logo-v1.png";
 import CreateChat from "./components/createChat";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AudioIcon from "./media/audio-wave.gif";
 
 var socket;
 if (process.env.NODE_ENV === "development") {
@@ -44,6 +45,7 @@ function Chat() {
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [editedMessage, setEditedMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
+	// eslint-disable-next-line no-unused-vars
 	const [isBlocked, setIsBlocked] = useState(false);
 	// eslint-disable-next-line no-unused-vars
 	const [blobURL, setBlobURL] = useState("");
@@ -52,31 +54,6 @@ function Chat() {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isText, setIstText] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
-
-	//timer state variables
-	const [seconds, setSeconds] = useState(0);
-	const [minutes, setMinutes] = useState(0);
-
-	var firstInterval = null;
-	var secondInterval = null;
-
-	const secondsIncrementer = () => {
-		setSeconds((prev) => prev + 1);
-	};
-
-	const minutesIncrementer = () => {
-		setMinutes((prev) => prev + 1);
-	};
-
-	const startCountUp = () => {
-		firstInterval = setInterval(secondsIncrementer, 1000);
-		secondInterval = setInterval(minutesIncrementer, 60000);
-	};
-
-	const stopCountUp = () => {
-		clearInterval(firstInterval);
-		clearInterval(secondInterval);
-	};
 
 	//ref variables
 	const inputChatRef = useRef();
@@ -94,28 +71,27 @@ function Chat() {
 		//
 	}, [userId, chatRoom, chatHistory, socket, chats]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const checkPermissions = () => {
-		navigator.getUserMedia(
-			{ audio: true },
-			() => {
-				console.log("access granted");
-				setIsBlocked(false);
-			},
-			() => {
-				console.log("access denied");
-				setIsBlocked(true);
-			}
-		);
-	};
+	// const checkPermissions = () => {
+	// 	navigator.getUserMedia(
+	// 		{ audio: true },
+	// 		() => {
+	// 			console.log("access granted");
+	// 			setIsBlocked(false);
+	// 		},
+	// 		() => {
+	// 			console.log("access denied");
+	// 			setIsBlocked(true);
+	// 		}
+	// 	);
+	// };
 
 	const startRecording = () => {
-		checkPermissions();
+		// checkPermissions();
 		if (isBlocked) {
 			console.log("Permission Denied");
 		} else {
 			Mp3Recorder.start()
 				.then(() => {
-					startCountUp();
 					setIsRecording(true);
 				})
 				.catch((e) => console.error(e));
@@ -140,6 +116,10 @@ function Chat() {
 				// setListAudios((list) => [...list, blobURL]);
 			})
 			.catch((e) => console.log(e));
+	};
+	const cancelRecording = () => {
+		Mp3Recorder.stop();
+		setIsRecording(false);
 	};
 
 	const sendAudioFile = async (file) => {
@@ -499,18 +479,16 @@ function Chat() {
 												border: 1,
 												borderColor: "red.main",
 											}}
-											onClick={stopRecording}
+											onClick={cancelRecording}
 										>
 											<DeleteIcon color="red" />
 										</Button>
 										<Button
 											variant="outlined"
 											color="green"
-											sx={{ pl: 3, pr: 3, color: "#fff" }}
-											onClick={sendMessage}
+											sx={{ pl: 1, pr: 1, color: "#fff" }}
 										>
-											{minutes}:
-											{seconds < 60 ? <p>{seconds}</p> : setSeconds(0)}
+											<img src={AudioIcon} alt="audio recording" width="25px" />
 										</Button>
 										<Button
 											sx={{
