@@ -5,6 +5,7 @@ import Login from "./login";
 import Profile from "./profile";
 import Signup from "./signup";
 import Account from "./account";
+import VideoCall from "./videoCall";
 
 function App() {
 	useEffect(() => {
@@ -30,6 +31,9 @@ function App() {
 				</Route>
 				<Route path="/signup">
 					<Signup />
+				</Route>
+				<Route path="/room">
+					<VideoCall />
 				</Route>
 			</Switch>
 		</Router>
