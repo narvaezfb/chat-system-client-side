@@ -1,12 +1,12 @@
 import React from "react";
-import Box from "@mui/material/Box";
+import { Box, Button } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import PersonIcon from "@mui/icons-material/Person";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 
 import { Typography } from "@mui/material";
 
-const ChatContainer = ({ userName }) => {
+const ChatContainer = ({ userName, call }) => {
 	return (
 		<Box
 			sx={{
@@ -37,7 +37,9 @@ const ChatContainer = ({ userName }) => {
 				}}
 			>
 				<CallIcon color="green" />
-				<VideoCallIcon color="green" sx={{}} />
+				<Button onClick={call}>
+					<VideoCallIcon color="green" />
+				</Button>
 			</Box>
 		</Box>
 	);

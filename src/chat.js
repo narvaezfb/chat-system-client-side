@@ -23,6 +23,7 @@ import Logo from "./media/logo-v1.png";
 import CreateChat from "./components/createChat";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AudioIcon from "./media/audio-wave.gif";
+import Peer from "peerjs";
 
 var socket;
 if (process.env.NODE_ENV === "development") {
@@ -55,8 +56,15 @@ function Chat() {
 	const [isText, setIstText] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
 
+	//peer ID
+	const [remotePeerId, setRemotePeerId] = useState(null);
+	const [isVideoCall, setIsVideoCall] = useState(false);
+
 	//ref variables
 	const inputChatRef = useRef();
+	const peerInstance = useRef(null);
+	const currentUserVideoRef = useRef(null);
+	const remoteVideoRef = useRef(null);
 
 	//axios with default
 	Axios.defaults.withCredentials = true;
@@ -68,8 +76,199 @@ function Chat() {
 
 	useEffect(() => {
 		isAuthenticated();
-		//
 	}, [userId, chatRoom, chatHistory, socket, chats]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	const isAuthenticated = () => {
+		try {
+			Axios.get(`${url}/login`, {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			})
+				.then((response) => {
+					if (!response.data.loggedIn) {
+						return history.push("/");
+					}
+					setUserId(response.data.user._id);
+
+					const peer = new Peer(response.data.user._id);
+
+					peer.on("open", (id) => {
+						console.log("peer", id);
+					});
+
+					peer.on("call", (call) => {
+						var getUserMedia =
+							navigator.getUserMedia ||
+							navigator.webkitGetUserMedia ||
+							navigator.mozGetUserMedia;
+
+						getUserMedia({ video: true }, (mediaStream) => {
+							setIsVideoCall(true);
+							currentUserVideoRef.current.srcObject = mediaStream;
+							currentUserVideoRef.current.play();
+
+							call.answer(mediaStream);
+							call.on("stream", (remoteStream) => {
+								remoteVideoRef.current.srcObject = remoteStream;
+								remoteVideoRef.current.play();
+							});
+						});
+					});
+
+					peerInstance.current = peer;
+
+					if (userId !== "") {
+						Axios.get(`${url}/userchats/${userId}`, {
+							headers: {
+								Authorization: localStorage.getItem("token"),
+							},
+						}).then((response) => {
+							if (
+								response.data.status === "This user does not have any chats "
+							) {
+								console.log("this user does not have any chats");
+							} else {
+								setChats(response.data.data.chatRooms);
+							}
+						});
+					}
+				})
+				.catch(() => {
+					return history.push("/");
+				});
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	//VIDEO CHAT HANDLING
+	const call = () => {
+		setIsVideoCall(true);
+		var getUserMedia =
+			navigator.getUserMedia ||
+			navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia;
+
+		getUserMedia({ video: true }, (mediaStream) => {
+			currentUserVideoRef.current.srcObject = mediaStream;
+			currentUserVideoRef.current.play();
+			var call = peerInstance.current.call(remotePeerId, mediaStream);
+			call.on("stream", (remoteStream) => {
+				remoteVideoRef.current.srcObject = remoteStream;
+				remoteVideoRef.current.play();
+			});
+		});
+	};
+
+	const getCurrentChat = (event) => {
+		socket.disconnect();
+		socket.connect();
+		setChatHistory([]);
+		socket.emit("joined", event.currentTarget.id);
+		setChatRoom(event.currentTarget.id);
+		setCurrentUserChat(event.currentTarget.innerText);
+		getChatHistory(event.currentTarget.id);
+		getRemotePeerId(event.currentTarget.id);
+		recieveMessage();
+	};
+
+	const getRemotePeerId = (chatRoomID) => {
+		Axios.get(`${url}/chatRooms/${chatRoomID}`, {
+			// headers: {
+			// 	Authorization: localStorage.getItem("token"),
+			// },
+		}).then((response) => {
+			console.log("chatRoom ID", response.data.data.chatRoom);
+			if (response.data.data.chatRoom.userID1 === userId) {
+				setRemotePeerId(response.data.data.chatRoom.userID2);
+			} else {
+				setRemotePeerId(response.data.data.chatRoom.userID1);
+			}
+		});
+
+		console.log("remote Peer ID", remotePeerId);
+	};
+
+	const getChatHistory = (chatRoomID) => {
+		Axios.get(`${url}/chatRoom/${chatRoomID}/messages`, {
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		}).then((response) => {
+			console.log(response);
+			setChatHistory(response.data.data.messages);
+		});
+	};
+
+	const recieveMessage = () => {
+		socket.on("recieve-message", (retrieveCurrentChatHistory) => {
+			console.log(retrieveCurrentChatHistory);
+			setChatHistory(retrieveCurrentChatHistory);
+		});
+	};
+
+	const sendMessage = async () => {
+		if (currentMessage !== "") {
+			const messageData = {
+				From: userId,
+				chatRoom: chatRoom,
+				message: currentMessage,
+				messageFormat: messageFormat,
+			};
+
+			await socket.emit("send-message", messageData);
+
+			await Axios.get(`${url}/chatRoom/${chatRoom}/messages`, {
+				headers: {
+					Authorization: localStorage.getItem("token"),
+				},
+			}).then((response) => {
+				setChatHistory(response.data.data.messages);
+			});
+			return setCurrentMessage("");
+		}
+	};
+
+	const handleEditMessage = (event) => {
+		if (event.currentTarget.id !== "") {
+			Axios.patch(
+				`${url}/messages/${event.currentTarget.id}`,
+				{ message: editedMessage },
+				{
+					headers: {
+						Authorization: localStorage.getItem("token"),
+					},
+				}
+			).then((response) => {
+				console.log(response);
+				getChatHistory(chatRoom);
+			});
+		}
+	};
+	const handleDeleteMessage = (event) => {
+		Axios.delete(`${url}/messages/${event.currentTarget.id}`, {
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		}).then(() => {
+			getChatHistory(chatRoom);
+		});
+	};
+
+	const handleEditedMessage = (event) => {
+		setEditedMessage(event.target.value);
+	};
+
+	const convertDateFormat = (date) => {
+		return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+	};
+
+	const handleClose = () => {
+		setIsOpen(false);
+	};
+
+	// AUDIO HANDLING
 
 	// const checkPermissions = () => {
 	// 	navigator.getUserMedia(
@@ -157,6 +356,7 @@ function Chat() {
 		});
 	};
 
+	//IMAGE HANLDING
 	const onFileChange = (event) => {
 		if (event.target.value.length === 0) {
 			console.log("no file has been selected");
@@ -206,130 +406,6 @@ function Chat() {
 		});
 	};
 
-	const isAuthenticated = () => {
-		try {
-			Axios.get(`${url}/login`, {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			})
-				.then((response) => {
-					if (!response.data.loggedIn) {
-						return history.push("/");
-					}
-					setUserId(response.data.user._id);
-
-					if (userId !== "")
-						Axios.get(`${url}/userchats/${userId}`, {
-							headers: {
-								Authorization: localStorage.getItem("token"),
-							},
-						}).then((response) => {
-							if (
-								response.data.status === "This user does not have any chats "
-							) {
-								console.log("this user does not have any chats");
-							} else {
-								setChats(response.data.data.chatRooms);
-							}
-						});
-				})
-				.catch(() => {
-					return history.push("/");
-				});
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const getCurrentChat = (event) => {
-		socket.disconnect();
-		socket.connect();
-		setChatHistory([]);
-		socket.emit("joined", event.currentTarget.id);
-		setChatRoom(event.currentTarget.id);
-		setCurrentUserChat(event.currentTarget.innerText);
-		getChatHistory(event.currentTarget.id);
-		recieveMessage();
-	};
-
-	const getChatHistory = (chatRoomID) => {
-		Axios.get(`${url}/chatRoom/${chatRoomID}/messages`, {
-			headers: {
-				Authorization: localStorage.getItem("token"),
-			},
-		}).then((response) => {
-			setChatHistory(response.data.data.messages);
-		});
-	};
-
-	const recieveMessage = () => {
-		socket.on("recieve-message", (retrieveCurrentChatHistory) => {
-			console.log(retrieveCurrentChatHistory);
-			setChatHistory(retrieveCurrentChatHistory);
-		});
-	};
-
-	const sendMessage = async () => {
-		if (currentMessage !== "") {
-			const messageData = {
-				From: userId,
-				chatRoom: chatRoom,
-				message: currentMessage,
-				messageFormat: messageFormat,
-			};
-
-			await socket.emit("send-message", messageData);
-
-			await Axios.get(`${url}/chatRoom/${chatRoom}/messages`, {
-				headers: {
-					Authorization: localStorage.getItem("token"),
-				},
-			}).then((response) => {
-				setChatHistory(response.data.data.messages);
-			});
-			return setCurrentMessage("");
-		}
-	};
-
-	const handleEditMessage = (event) => {
-		if (event.currentTarget.id !== "") {
-			Axios.patch(
-				`${url}/messages/${event.currentTarget.id}`,
-				{ message: editedMessage },
-				{
-					headers: {
-						Authorization: localStorage.getItem("token"),
-					},
-				}
-			).then((response) => {
-				console.log(response);
-				getChatHistory(chatRoom);
-			});
-		}
-	};
-	const handleDeleteMessage = (event) => {
-		Axios.delete(`${url}/messages/${event.currentTarget.id}`, {
-			headers: {
-				Authorization: localStorage.getItem("token"),
-			},
-		}).then(() => {
-			getChatHistory(chatRoom);
-		});
-	};
-
-	const handleEditedMessage = (event) => {
-		setEditedMessage(event.target.value);
-	};
-
-	const convertDateFormat = (date) => {
-		return moment(date).format("MMMM Do YYYY, h:mm:ss a");
-	};
-
-	const handleClose = () => {
-		setIsOpen(false);
-	};
-
 	return (
 		<Layout>
 			<Box
@@ -359,72 +435,87 @@ function Chat() {
 							borderColor: "secondary.main",
 						}}
 					>
-						<ChatContainerHeader userName={currentUserChat} />
+						<ChatContainerHeader userName={currentUserChat} call={call} />
+						{/* <input
+							value={remotePeerIdValue}
+							onChange={(event) => setRemotePeerIdValue(event.target.value)}
+						/> */}
 
-						<Box
-							sx={{
-								border: 1,
-								borderColor: "secondary.main",
-								m: 1,
-								pt: 1,
-								flexGrow: 1,
-							}}
-						>
-							<Scrollbars style={{}}>
-								{chatHistory?.map((message, index) => {
-									if (message.messageFormat === "text") {
-										return (
-											<Message
-												message={message.message}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												text={message.message}
-												handleEditMessage={handleEditMessage}
-												handleDeleteMessage={handleDeleteMessage}
-												handleTextToSpeech={() =>
-													speak({ text: message.message })
-												}
-												handleEditedMessage={handleEditedMessage}
-												editedMessage={editedMessage}
-											/>
-										);
-									}
-									if (message.messageFormat === "audio") {
-										// if (message.audio.filename && message.audio.filename !== "")
-										return (
-											<AudioMessage
-												audio={message.filename}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												handleDeleteMessage={handleDeleteMessage}
-											/>
-										);
-									}
+						{isVideoCall === false ? (
+							<Box
+								sx={{
+									border: 1,
+									borderColor: "secondary.main",
+									m: 1,
+									pt: 1,
+									flexGrow: 1,
+								}}
+							>
+								<Scrollbars style={{}}>
+									{chatHistory?.map((message, index) => {
+										if (message.messageFormat === "text") {
+											return (
+												<Message
+													message={message.message}
+													time={convertDateFormat(message.createdAt)}
+													userID={userId}
+													fromUser={message.fromUser}
+													key={index}
+													id={message._id}
+													text={message.message}
+													handleEditMessage={handleEditMessage}
+													handleDeleteMessage={handleDeleteMessage}
+													handleTextToSpeech={() =>
+														speak({ text: message.message })
+													}
+													handleEditedMessage={handleEditedMessage}
+													editedMessage={editedMessage}
+												/>
+											);
+										}
+										if (message.messageFormat === "audio") {
+											// if (message.audio.filename && message.audio.filename !== "")
+											return (
+												<AudioMessage
+													audio={message.filename}
+													time={convertDateFormat(message.createdAt)}
+													userID={userId}
+													fromUser={message.fromUser}
+													key={index}
+													id={message._id}
+													handleDeleteMessage={handleDeleteMessage}
+												/>
+											);
+										}
 
-									if (message.messageFormat === "image") {
-										// if (message.audio.filename && message.audio.filename !== "")
-										return (
-											<ImageMessage
-												image={message.filename}
-												time={convertDateFormat(message.createdAt)}
-												userID={userId}
-												fromUser={message.fromUser}
-												key={index}
-												id={message._id}
-												handleDeleteMessage={handleDeleteMessage}
-											/>
-										);
-									}
-									return <h1>message</h1>;
-								})}
-							</Scrollbars>
-						</Box>
+										if (message.messageFormat === "image") {
+											// if (message.audio.filename && message.audio.filename !== "")
+											return (
+												<ImageMessage
+													image={message.filename}
+													time={convertDateFormat(message.createdAt)}
+													userID={userId}
+													fromUser={message.fromUser}
+													key={index}
+													id={message._id}
+													handleDeleteMessage={handleDeleteMessage}
+												/>
+											);
+										}
+										return <h1>message</h1>;
+									})}
+								</Scrollbars>
+							</Box>
+						) : (
+							<div>
+								<div>
+									<video ref={currentUserVideoRef} />
+								</div>
+								<div>
+									<video ref={remoteVideoRef} />
+								</div>
+							</div>
+						)}
 
 						<Box
 							sx={{
