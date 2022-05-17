@@ -284,6 +284,8 @@ function Chat() {
 	// 	);
 	// };
 
+	//more code
+
 	const startRecording = () => {
 		// checkPermissions();
 		if (isBlocked) {
