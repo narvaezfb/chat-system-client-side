@@ -23,6 +23,7 @@ const VideoCall = () => {
 	Axios.defaults.withCredentials = true;
 
 	useEffect(() => {
+		//still thinking
 		isAuthenticated();
 	}, []);
 
